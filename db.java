@@ -10,9 +10,10 @@ public class db {
     private static final int port = 3306;
     private static final String username = "root";
     private static final String password = "";
+    public Connection con;
     
-    public Connection init(){
-        Connection con = null;
+    public void init(){
+        con = null;
  
         try{  
         	Class.forName("com.mysql.cj.jdbc.Driver");  
@@ -24,11 +25,10 @@ public class db {
         	 
         	//con.close();  
         }catch(Exception e){ System.out.println(e);}  
-		
-    	return con; 
+
     }
     
-    public void getCitizenName(Connection con, String ssn) throws SQLException{
+    public void getCitizenName(String ssn) throws SQLException{
     	Statement stmt = con.createStatement();  
     	ResultSet rs = stmt.executeQuery("select firstName, lastName "
 					    			+ "from Citizen "
@@ -38,7 +38,7 @@ public class db {
     	System.out.println(rs.getString("firstName")+ " " + rs.getString("lastName")); 
     }
     
-    public void getCitizenAppointmentID(Connection con, String ssn) throws SQLException{
+    public void getCitizenAppointmentID(String ssn) throws SQLException{
     	Statement stmt = con.createStatement();  
     	ResultSet rs = stmt.executeQuery("select appointmentID "
 					    			+ "from Books "
@@ -48,7 +48,7 @@ public class db {
     	System.out.println(rs.getString("appointmentID")); 
     }
     
-    public void bookAppointment(Connection con, String citizenSSN, String hospitalID) throws SQLException {
+    public void bookAppointment(String citizenSSN, String hospitalID) throws SQLException {
         
         Statement st = con.createStatement();
 		CallableStatement proc = con.prepareCall("call BookAppointment(?,?,?);");
@@ -73,11 +73,12 @@ public class db {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
     	
     	db database = new db();
-    	Connection con = database.init();
+    	database.init();
     	
     	String ssn = "11018701926";
-    	database.getCitizenName(con, ssn);
-    	database.bookAppointment(con, ssn, "20309");
-    	con.close();
+    	database.getCitizenName(ssn);
+    	database.getCitizenAppointmentID(ssn);
+    	database.bookAppointment(ssn, "20309");
+    	database.con.close();
     }  
 }
