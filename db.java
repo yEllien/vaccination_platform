@@ -41,25 +41,33 @@ public class db {
     public void getCitizenAppointmentID(Connection con, String ssn) throws SQLException{
     	Statement stmt = con.createStatement();  
     	ResultSet rs = stmt.executeQuery("select appointmentID "
-					    			+ "from Appointments "
+					    			+ "from Books "
 					    			+ "where citizenSSN = " + ssn);  
     	
     	while(rs.next())  
     	System.out.println(rs.getString("appointmentID")); 
     }
     
-    public void bookAppointment(Connection con, String ssn) throws SQLException {
-        // Creating a statement
-        Statement st = con.createStatement();
-        String sql = "insert into appointment values (\"0123456789\", \"2022/05/20\", \"08:00-12:00\", \"Pfizer\")";
+    public void bookAppointment(Connection con, String citizenSSN, String hospitalID) throws SQLException {
         
-        // Executing query
-        int m = st.executeUpdate(sql);
-        if (m == 1)
-            System.out.println(
-                "inserted successfully : " + sql);
-        else
-            System.out.println("insertion failed");
+        Statement st = con.createStatement();
+		CallableStatement proc = con.prepareCall("call BookAppointment(?,?,?);");
+		
+		ResultSet rs;
+		
+		Random rnd = new Random();
+		char c = (char) ('a' + rnd.nextInt(26));
+		
+		String appointmentID = citizenSSN.substring(0, 9) + c;
+		
+		proc.setString(1, appointmentID);
+		proc.setString(2, citizenSSN);
+		proc.setString(3, hospitalID);
+		
+		rs = proc.executeQuery();
+		
+		rs.close();
+		proc.close();
     }
     
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
@@ -69,7 +77,7 @@ public class db {
     	
     	String ssn = "11018701926";
     	database.getCitizenName(con, ssn);
-    	database.bookAppointment(con, ssn);
+    	database.bookAppointment(con, ssn, "20309");
     	con.close();
     }  
 }
