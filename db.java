@@ -1,4 +1,4 @@
-package hy351;
+package hy351.vaccination_platform;
 
 import java.sql.*;
 import java.util.*;
