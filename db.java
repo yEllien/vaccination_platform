@@ -63,12 +63,6 @@ public class db {
 		CallableStatement proc = con.prepareCall("call BookAppointment(?,?,?);");
 		ResultSet rs;
 		
-		/*
-		Random rnd = new Random();
-		char c = (char) ('a' + rnd.nextInt(26));
-		String appointmentID = citizenSSN.substring(0, 9) + c;
-		*/
-		
 		proc.setInt(1, doseNumber);
 		proc.setString(2, citizenSSN);
 		proc.setString(3, hospitalID);
@@ -111,6 +105,87 @@ public class db {
     	rs = proc.executeQuery();
     }
     
+    public String getVaccinationState(String ssn) throws SQLException{
+    	String state = "";
+    	Statement stmt = con.createStatement();  
+    	ResultSet rs = stmt.executeQuery("select vaccinationState "
+					    			+ "from Citizen "
+					    			+ "where ssn = " + ssn);  
+    	
+    	while(rs.next()) {
+    		state = rs.getString("vaccinationState");
+    	}
+    	
+		return state;
+    }
+    
+    private String generateCertificateID(String ssn) {
+
+		Random rnd = new Random();
+		String id = ssn;
+		int i = 0;
+		
+		while(i++ < 9) {			
+			char c = (char) ('a' + rnd.nextInt(26));
+			id = id + c ;
+		}
+
+		return id;
+    }
+    
+    public boolean IssueCertificate(String ssn) throws SQLException {
+    	String state = getVaccinationState(ssn);
+    	
+    	if(state == "fully vaccinated"){
+    		String certificateID = generateCertificateID(ssn);
+        	
+    		Statement st = con.createStatement();  
+        	CallableStatement proc = con.prepareCall("call IssueVaccinationCertificate(?,?);");  
+        	ResultSet rs;
+        	
+        	proc.setString(1, certificateID);
+        	proc.setString(2, ssn);
+        	
+        	rs = proc.executeQuery();
+    		
+    		return true;
+    	}
+    	
+    	return false;
+    }
+    
+    public String getAppointmentDate(String ssn, int doseNum) throws SQLException {
+    	String date = "";
+    	Statement stmt = con.createStatement();  
+    	ResultSet rs = stmt.executeQuery("select appointmentDate "
+						    			+ "from appointment "
+						    			+ "where citizenSSN = " + ssn
+						    			+ " and doseNumber = " + doseNum);  
+	    	
+    	while(rs.next()) {
+    		date = rs.getString("appointmentDate");
+    	}
+    	
+    	return date;
+    }
+    
+    
+    public ArrayList<String[]> ViewBookedAppointments(String ssn) throws SQLException {
+		CallableStatement st = con.prepareCall("call ViewBookedAppointments(?);");
+		ArrayList<String[]> bookedAppointments = new ArrayList<String[]>();
+
+		ResultSet rs;
+		st.setString(1, ssn);
+		rs = st.executeQuery();
+		
+		bookedAppointments =  ResultSetArray(rs);
+		
+		rs.close();
+		st.close();
+		
+		return bookedAppointments;    
+    }
+
     /* 
      * Methods to execute queries for MedicalStaff 
      */
@@ -297,7 +372,7 @@ public class db {
     	//ArrayList<String[]> ar = database.getDateAndTimeSlotsAvailability("20309", "2022/05/16");
     			//database.GetDailyAppointments("20309", "2022/05/19");
     	//PrintArrayList(ar);
-    		database.getNearbyHospitals("21810");
+    	database.getNearbyHospitals("21810");
     	database.con.close();
     	}
     }  
