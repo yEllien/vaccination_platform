@@ -41,11 +41,26 @@ public class db {
 		return name;
     }
     
-    public void bookAppointment(int doseNumber, String citizenSSN, String hospitalID) throws SQLException {
+    public void UpdateTimeSlotCapacity(String hospitalID, String date, String timeSlot) throws SQLException{
+        Statement st = con.createStatement();
+		CallableStatement proc = con.prepareCall("call UpdateCapacity(?,?,?);");
+		ResultSet rs;
+		
+		proc.setString(1, hospitalID);
+		proc.setString(2, date);
+		proc.setString(3, timeSlot);
+		
+		rs = proc.executeQuery();
+		
+		rs.close();
+		proc.close();
+    }
+    
+    public void bookAppointment(int doseNumber, String citizenSSN, String hospitalID, 
+    							String date, String timeSlot, String vaccine) throws SQLException {
         
         Statement st = con.createStatement();
 		CallableStatement proc = con.prepareCall("call BookAppointment(?,?,?);");
-		
 		ResultSet rs;
 		
 		/*
@@ -60,12 +75,40 @@ public class db {
 		
 		rs = proc.executeQuery();
 		
+		proc = con.prepareCall("call AddAppointment(?,?,?,?,?);");
+		proc.setString(1, citizenSSN);
+		proc.setInt(2, doseNumber);
+		proc.setString(3, date);
+		proc.setString(4, timeSlot);
+		proc.setString(5, vaccine);
+		
 		rs.close();
 		proc.close();
     }
     
-    public void ConfirmAppointment(String ssn, int doseNumber, String hospitalID, String date, String timeSlot, String vaccine){
+    public int getDosesCompleted(String ssn) throws SQLException {
+    	int doses = 0;
+    	Statement stmt = con.createStatement();  
+    	ResultSet rs = stmt.executeQuery("select dosesCompleted "
+					    			+ "from Citizen "
+					    			+ "where ssn = " + ssn);  
     	
+    	while(rs.next()) {
+    		doses = rs.getInt("dosesCompleted");
+    	}
+    	
+    	return doses;
+    }
+    
+    public void UpdateDosesAndVaccinationState(String ssn, int doseNumber) throws SQLException {
+    	Statement st = con.createStatement();  
+    	CallableStatement proc = con.prepareCall("call UpdateDosesAndState(?,?);");  
+    	ResultSet rs;
+    	
+    	proc.setString(1, ssn);
+    	proc.setInt(2, doseNumber);
+    	
+    	rs = proc.executeQuery();
     }
     
     /* 
