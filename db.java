@@ -37,7 +37,7 @@ public class db {
     		name[1] = rs.getString("lastName");
     		System.out.println(name[0] + " " + name[1]); 
     	}
-    	
+    	rs.close();
 		return name;
     }
     
@@ -68,16 +68,22 @@ public class db {
 		proc.setString(3, hospitalID);
 		
 		rs = proc.executeQuery();
-		
-		proc = con.prepareCall("call AddAppointment(?,?,?,?,?);");
-		proc.setString(1, citizenSSN);
-		proc.setInt(2, doseNumber);
-		proc.setString(3, date);
-		proc.setString(4, timeSlot);
-		proc.setString(5, vaccine);
-		
 		rs.close();
 		proc.close();
+		
+		
+		CallableStatement proc2 = con.prepareCall("call AddAppointment(?,?,?,?,?);");
+		proc2.setString(1, citizenSSN);
+		proc2.setInt(2, doseNumber);
+		proc2.setString(3, date);
+		proc2.setString(4, timeSlot);
+		proc2.setString(5, vaccine);
+		rs = proc2.executeQuery();
+		
+		rs.close();
+		proc2.close();
+		
+		UpdateTimeSlotCapacity(hospitalID, date, timeSlot);
     }
     
     public int getDosesCompleted(String ssn) throws SQLException {
@@ -103,6 +109,9 @@ public class db {
     	proc.setInt(2, doseNumber);
     	
     	rs = proc.executeQuery();
+    	
+    	rs.close();
+    	proc.close();
     }
     
     public String getVaccinationState(String ssn) throws SQLException{
@@ -147,7 +156,9 @@ public class db {
         	proc.setString(2, ssn);
         	
         	rs = proc.executeQuery();
-    		
+        	
+        	rs.close();
+        	proc.close();
     		return true;
     	}
     	
@@ -185,7 +196,24 @@ public class db {
 		
 		return bookedAppointments;    
     }
+    
+    // Procedure CancelAppointment() checks if date is at least 3 days prior to the booked appointment
+    // Doesn't check if citizen has cancelled an appointment before
+    
+    public void CancelAppointment(String ssn, int doseNum) throws SQLException {
+		Statement st = con.createStatement();  
+    	CallableStatement proc = con.prepareCall("call CancelAppointment(?,?);");  
+    	ResultSet rs;
 
+    	proc.setString(1, ssn);
+    	proc.setInt(2, doseNum);
+    	rs = proc.executeQuery();
+    	
+		rs.close();
+		proc.close();
+
+    }
+    
     /* 
      * Methods to execute queries for MedicalStaff 
      */
@@ -373,6 +401,8 @@ public class db {
     			//database.GetDailyAppointments("20309", "2022/05/19");
     	//PrintArrayList(ar);
     	database.getNearbyHospitals("21810");
+    	//database.bookAppointment(1, ssn, "20309", "2022/05/22", "08:00-12:00", "Pfizer");
+    	database.CancelAppointment(ssn, 1);
     	database.con.close();
     	}
     }  
