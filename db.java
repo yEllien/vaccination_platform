@@ -214,6 +214,38 @@ public class db {
 
     }
     
+    public void ModifyDate(String ssn, int doseNum, String newDate, String oldTimeSlot, String hospitalID) throws SQLException {
+		Statement st = con.createStatement();  
+    	CallableStatement proc = con.prepareCall("call ModifyDate(?,?,?,?,?);");  
+    	ResultSet rs;
+
+    	proc.setString(1, ssn);
+    	proc.setInt(2, doseNum);
+    	proc.setString(3, newDate);
+    	proc.setString(4, oldTimeSlot);
+    	proc.setString(5, hospitalID);
+    	rs = proc.executeQuery();
+    	
+		rs.close();
+		proc.close();
+    }
+    
+    public void ModifyTimeSlot(String ssn, int doseNum, String oldDate, String newTimeSlot, String hospitalID) throws SQLException {
+		Statement st = con.createStatement();  
+    	CallableStatement proc = con.prepareCall("call ModifyDate(?,?,?,?,?);");  
+    	ResultSet rs;
+
+    	proc.setString(1, ssn);
+    	proc.setInt(2, doseNum);
+    	proc.setString(3, oldDate);
+    	proc.setString(4, newTimeSlot);
+    	proc.setString(5, hospitalID);
+    	rs = proc.executeQuery();
+    	
+		rs.close();
+		proc.close();
+    }
+    
     /* 
      * Methods to execute queries for MedicalStaff 
      */
@@ -275,24 +307,6 @@ public class db {
 		
 		return dailyAppointments;    	
     }
-    
-    /*
-    public String getCitizenAppointmentID(String ssn) throws SQLException{
-    	String appointmentID = null;
-    	
-    	Statement stmt = con.createStatement();  
-    	ResultSet rs = stmt.executeQuery("select appointmentID "
-					    			+ "from Books "
-					    			+ "where citizenSSN = " + ssn);  
-    	
-    	while(rs.next()) {
-    		appointmentID = rs.getString("appointmentID");
-    		System.out.println(appointmentID); 
-    	}
-    	
-    	return appointmentID;
-    } 
-    */
     
     /* 
      * Methods to execute queries for a Hospital 
@@ -401,8 +415,8 @@ public class db {
     			//database.GetDailyAppointments("20309", "2022/05/19");
     	//PrintArrayList(ar);
     	database.getNearbyHospitals("21810");
-    	//database.bookAppointment(1, ssn, "20309", "2022/05/22", "08:00-12:00", "Pfizer");
-    	database.CancelAppointment(ssn, 1);
+    	database.bookAppointment(1, ssn, "20309", "2022/05/22", "08:00-12:00", "Pfizer");
+    	//database.CancelAppointment(ssn, 1);
     	database.con.close();
     	}
     }  
