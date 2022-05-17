@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Εξυπηρετητής: 127.0.0.1
--- Χρόνος δημιουργίας: 17 Μάη 2022 στις 09:08:30
+-- Χρόνος δημιουργίας: 17 Μάη 2022 στις 17:05:12
 -- Έκδοση διακομιστή: 10.4.22-MariaDB
 -- Έκδοση PHP: 8.1.0
 
@@ -28,6 +28,11 @@ DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `AddAppointment` (IN `citizenSSN` VARCHAR(11), IN `doseNumber` INT, IN `appointmentDate` DATE, IN `appointmentTime` ENUM('08:00-12:00','12:00-16:00','16:00-20:00'), IN `vaccineName` VARCHAR(20))  BEGIN
 	INSERT INTO `appointment`(`citizenSSN`, `doseNumber`, `appointmentDate`, `appointmentTime`, `vaccineName`) 
 	VALUES (citizenSSN, doseNumber, appointmentDate, appointmentTime, vaccineName);
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AddCommunicationInfo` (IN `ssn` VARCHAR(11), IN `email` VARCHAR(100), IN `phoneNumber` VARCHAR(10), IN `postalCode` VARCHAR(5))  BEGIN
+	INSERT INTO communicationinfo
+    VALUES (ssn, email, phoneNumber, postalCode);
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `BookAppointment` (IN `doseNumber` INT, IN `citizenSSN` VARCHAR(11), IN `hospitalID` VARCHAR(5))  BEGIN 
@@ -81,7 +86,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `IssueVaccinationCertificate` (IN `i
     FROM appointment a, citizen c
 	WHERE a.citizenSSN = ssn AND a.doseNumber = c.dosesCompleted AND a.citizenSSN = c.SSN;
     
-    IF (DATEDIFF(CURRENT_DATE, dateOfLastDose) >= 14) THEN
+    IF (DATEDIFF(CURRENT_DATE, dateOfLastDose) >= 1) THEN
     	INSERT INTO `vaccinationcerificate`(`certificateID`, `citizenSSN`) 
     	VALUES (id, ssn);
         SET @flag = TRUE;
@@ -170,6 +175,14 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `ViewDailyAppointments` (IN `hospita
     JOIN appointment a on a.citizenSSN = b.citizenSSN and a.doseNumber = b.doseNumber and a.appointmentDate = apptDate
     JOIN hospital h on h.hospitalID = b.hospitalID
     ORDER BY a.appointmentTime ASC;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ViewVaccinationInfo` (IN `ssn` VARCHAR(11))  BEGIN
+    SELECT  a.appointmentDate, a.doseNumber, a.vaccineName, h.name, v.manufacturer
+    FROM citizen c, books b, hospital h, hospital_vaccine hv, vaccine v, appointment a
+    WHERE c.SSN = b.citizenSSN AND b.hospitalID = h.hospitalID AND b.hospitalID = hv.hospitalID 
+    AND hv.vaccineID = v.vaccineID AND a.citizenSSN = c.SSN AND c.SSN = ssn
+    AND b.doseNumber = a.doseNumber AND b.citizenSSN = a.citizenSSN;
 END$$
 
 DELIMITER ;
