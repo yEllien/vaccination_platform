@@ -308,6 +308,10 @@ public class db {
 		return dailyAppointments;    	
     }
     
+    public void ConfirmVaccination(String ssn, int doseNumber) throws SQLException {
+    	UpdateDosesAndVaccinationState(ssn, doseNumber);
+    }
+    
     /* 
      * Methods to execute queries for a Hospital 
      */
@@ -415,8 +419,10 @@ public class db {
     			//database.GetDailyAppointments("20309", "2022/05/19");
     	//PrintArrayList(ar);
     	database.getNearbyHospitals("21810");
-    	database.bookAppointment(1, ssn, "20309", "2022/05/22", "08:00-12:00", "Pfizer");
+    	//database.bookAppointment(2, ssn, "20309", "2022/05/26", "08:00-12:00", "Pfizer");
+    	database.ConfirmVaccination(ssn, 2);
     	//database.CancelAppointment(ssn, 1);
+    	
     	database.con.close();
     	}
     }  
