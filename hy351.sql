@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Εξυπηρετητής: 127.0.0.1
--- Χρόνος δημιουργίας: 17 Μάη 2022 στις 08:43:16
+-- Χρόνος δημιουργίας: 17 Μάη 2022 στις 09:08:30
 -- Έκδοση διακομιστή: 10.4.22-MariaDB
 -- Έκδοση PHP: 8.1.0
 
@@ -73,9 +73,23 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `IncrementCapacity` (IN `ssn` VARCHA
         );
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `IssueVaccinationCertificate` (`id` VARCHAR(20), `ssn` VARCHAR(11))  BEGIN
-    INSERT INTO `vaccinationcerificate`(`certificateID`, `citizenSSN`) 
-    VALUES (id, ssn);
+CREATE DEFINER=`root`@`localhost` PROCEDURE `IssueVaccinationCertificate` (IN `id` VARCHAR(20), IN `ssn` VARCHAR(11), OUT `flag` BOOLEAN)  BEGIN
+	DECLARE dateOfLastDose DATE;
+    		 	
+    SELECT a.appointmentDate
+	INTO dateOfLastDose
+    FROM appointment a, citizen c
+	WHERE a.citizenSSN = ssn AND a.doseNumber = c.dosesCompleted AND a.citizenSSN = c.SSN;
+    
+    IF (DATEDIFF(CURRENT_DATE, dateOfLastDose) >= 14) THEN
+    	INSERT INTO `vaccinationcerificate`(`certificateID`, `citizenSSN`) 
+    	VALUES (id, ssn);
+        SET @flag = TRUE;
+    ELSE 
+    	SET flag = FALSE;
+    END IF;
+    
+    SELECT @flag;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ModifyDate` (IN `ssn` VARCHAR(11), IN `dose` INT, IN `newDate` DATE, IN `oldTimeSlot` ENUM('08:00-12:00','12:00-16:00','16:00-20:00'), IN `hospitalID` VARCHAR(5))  BEGIN 
@@ -747,13 +761,6 @@ CREATE TABLE `vaccinationcerificate` (
   `certificateID` varchar(20) NOT NULL,
   `citizenSSN` varchar(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Άδειασμα δεδομένων του πίνακα `vaccinationcerificate`
---
-
-INSERT INTO `vaccinationcerificate` (`certificateID`, `citizenSSN`) VALUES
-('11018701926', '1');
 
 -- --------------------------------------------------------
 
