@@ -3,6 +3,8 @@ package Database;
 import java.sql.*;
 import java.util.*;
 
+import com.mysql.cj.xdevapi.Type;
+
 public class db {
 	
     private static final String url = "jdbc:mysql://localhost";
@@ -146,20 +148,30 @@ public class db {
     	String state = getVaccinationState(ssn);
     	
     	if(state == "fully vaccinated"){
+    		/*
+    		 	SELECT a.appointmentDate
+				FROM appointment a, citizen c
+				WHERE a.citizenSSN = ssn AND a.doseNumber = c.dosesCompleted AND a.citizenSSN = c.SSN;
+    		 */
+    		
+    		
     		String certificateID = generateCertificateID(ssn);
         	
     		Statement st = con.createStatement();  
-        	CallableStatement proc = con.prepareCall("call IssueVaccinationCertificate(?,?);");  
+        	CallableStatement proc = con.prepareCall("call IssueVaccinationCertificate(?,?,?);");  
         	ResultSet rs;
         	
         	proc.setString(1, certificateID);
         	proc.setString(2, ssn);
-        	
+        	proc.registerOutParameter(3, Types.BOOLEAN);
         	rs = proc.executeQuery();
+        	
+        	boolean valid = rs.getBoolean(3);
         	
         	rs.close();
         	proc.close();
-    		return true;
+        	
+    		return valid;
     	}
     	
     	return false;
@@ -420,8 +432,10 @@ public class db {
     	//PrintArrayList(ar);
     	database.getNearbyHospitals("21810");
     	//database.bookAppointment(2, ssn, "20309", "2022/05/26", "08:00-12:00", "Pfizer");
-    	database.ConfirmVaccination(ssn, 2);
+    	//database.ConfirmVaccination(ssn, 2);
     	//database.CancelAppointment(ssn, 1);
+    	if(database.IssueCertificate(ssn) == true) System.out.println("Issue vaccination certificate");
+    	else System.out.println("Can not issue vaccination certificate");
     	
     	database.con.close();
     	}
