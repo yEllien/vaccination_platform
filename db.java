@@ -206,6 +206,22 @@ public class db {
 		return bookedAppointments;    
     }
     
+    public ArrayList<String[]> ViewCompletedVaccinations(String ssn) throws SQLException {
+		CallableStatement st = con.prepareCall("call ViewCompletedVaccinations(?);");
+		ArrayList<String[]> completedVaccinations = new ArrayList<String[]>();
+
+		ResultSet rs;
+		st.setString(1, ssn);
+		rs = st.executeQuery();
+		
+		completedVaccinations =  ResultSetArray(rs);
+		
+		rs.close();
+		st.close();
+		
+		return completedVaccinations;    
+    }
+    
     // Procedure CancelAppointment() checks if date is at least 3 days prior to the booked appointment
     // Doesn't check if citizen has cancelled an appointment before
     
@@ -497,8 +513,11 @@ public class db {
     	//database.UpdateEmail("09118460019", "jakelester@email.com");
     	//database.UpdatePhoneNumber("09118460019", "6909118460");
     	//database.UpdatePostalCode("09118460019", "38010");
+    	//database.PrintArrayList(database.ViewCompletedVaccinations("11018701926"));
     	
     	database.con.close();
+    	
     	}
     }  
+    
 }

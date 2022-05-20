@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Εξυπηρετητής: 127.0.0.1
--- Χρόνος δημιουργίας: 17 Μάη 2022 στις 17:05:12
+-- Χρόνος δημιουργίας: 20 Μάη 2022 στις 09:47:53
 -- Έκδοση διακομιστή: 10.4.22-MariaDB
 -- Έκδοση PHP: 8.1.0
 
@@ -163,6 +163,12 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `ViewBookedAppointments` (IN `ssn` V
     SELECT b.citizenSSN, b.doseNumber, a.appointmentDate, a.appointmentTime, h.name
     FROM books b, appointment a, hospital h
     WHERE b.citizenSSN = ssn and a.citizenSSN = b.citizenSSN and h.hospitalID = b.hospitalID;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ViewCompletedVAccinations` (IN `ssn` VARCHAR(11))  BEGIN
+SELECT DISTINCT a.citizenSSN, a.doseNumber, a.appointmentDate, a.appointmentTime, h.name
+    FROM books b, appointment a, hospital h, citizen c
+    WHERE b.citizenSSN = ssn and a.citizenSSN = ssn and h.hospitalID = b.hospitalID and c.vaccinationState != 'not vaccinated';
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ViewDailyAppointments` (IN `hospitalID` VARCHAR(5), IN `currDate` DATE)  BEGIN
