@@ -99,6 +99,7 @@ public class db {
     		doses = rs.getInt("dosesCompleted");
     	}
     	
+    	rs.close();
     	return doses;
     }
     
@@ -127,6 +128,7 @@ public class db {
     		state = rs.getString("vaccinationState");
     	}
     	
+    	rs.close();
 		return state;
     }
     
@@ -148,13 +150,7 @@ public class db {
     	String state = getVaccinationState(ssn);
     	
     	if(state == "fully vaccinated"){
-    		/*
-    		 	SELECT a.appointmentDate
-				FROM appointment a, citizen c
-				WHERE a.citizenSSN = ssn AND a.doseNumber = c.dosesCompleted AND a.citizenSSN = c.SSN;
-    		 */
-    		
-    		
+
     		String certificateID = generateCertificateID(ssn);
         	
     		Statement st = con.createStatement();  
@@ -189,6 +185,7 @@ public class db {
     		date = rs.getString("appointmentDate");
     	}
     	
+    	rs.close();
     	return date;
     }
     
@@ -207,6 +204,22 @@ public class db {
 		st.close();
 		
 		return bookedAppointments;    
+    }
+    
+    public ArrayList<String[]> ViewCompletedVaccinations(String ssn) throws SQLException {
+		CallableStatement st = con.prepareCall("call ViewCompletedVaccinations(?);");
+		ArrayList<String[]> completedVaccinations = new ArrayList<String[]>();
+
+		ResultSet rs;
+		st.setString(1, ssn);
+		rs = st.executeQuery();
+		
+		completedVaccinations =  ResultSetArray(rs);
+		
+		rs.close();
+		st.close();
+		
+		return completedVaccinations;    
     }
     
     // Procedure CancelAppointment() checks if date is at least 3 days prior to the booked appointment
@@ -256,6 +269,64 @@ public class db {
     	
 		rs.close();
 		proc.close();
+    }
+    
+    public ArrayList<String[]> GetVaccinationInfo(String ssn) throws SQLException{
+		CallableStatement st = con.prepareCall("call ViewVaccinationInfo(?);");
+		ArrayList<String[]> vaccinationInfo = new ArrayList<String[]>();
+
+		ResultSet rs;
+		st.setString(1, ssn);
+		rs = st.executeQuery();
+		
+		vaccinationInfo =  ResultSetArray(rs);
+		
+		rs.close();
+		st.close();
+		
+		return vaccinationInfo;  
+    }
+    
+    public void UpdateEmail(String ssn, String email) throws SQLException {
+    	PreparedStatement preparedStmt = con.prepareStatement("update CommunicationInfo "
+												    			+ "set email = ? "
+												    			+ "where ssn = ? ");
+    	preparedStmt.setString(1, email);
+    	preparedStmt.setString(2, ssn);
+    	preparedStmt.executeUpdate();
+    }
+    
+    public void UpdatePhoneNumber(String ssn, String phoneNumber) throws SQLException {
+    	PreparedStatement preparedStmt = con.prepareStatement("update CommunicationInfo "
+												    			+ "set phoneNumber = ? "
+												    			+ "where ssn = ?" );
+    	preparedStmt.setString(1, phoneNumber);
+    	preparedStmt.setString(2, ssn);
+    	preparedStmt.executeUpdate();
+    }
+    
+    
+    public void UpdatePostalCode(String ssn, String postalCode) throws SQLException {
+    	PreparedStatement preparedStmt = con.prepareStatement("update CommunicationInfo "
+												    			+ "set postalCode = ? "
+												    			+ "where ssn = ? ");
+    	preparedStmt.setString(1, postalCode);
+    	preparedStmt.setString(2, ssn);
+    	preparedStmt.executeUpdate();
+    }
+    
+    public void AddCommunicationInfo(String ssn, String email, String phoneNumber, String postalCode) throws SQLException {
+		CallableStatement st = con.prepareCall("call AddCommunicationInfo(?, ?, ?, ?);");
+
+		ResultSet rs;
+		st.setString(1, ssn);
+		st.setString(2, email);
+		st.setString(3, phoneNumber);
+		st.setString(4, postalCode);
+		rs = st.executeQuery();
+		
+		rs.close();
+		st.close();
     }
     
     /* 
@@ -437,7 +508,16 @@ public class db {
     	if(database.IssueCertificate(ssn) == true) System.out.println("Issue vaccination certificate");
     	else System.out.println("Can not issue vaccination certificate");
     	
+    	//database.PrintArrayList(database.GetVaccinationInfo(ssn));
+    	//database.AddCommunicationInfo("09118460019", "jakelester@email.com", "6909118460", null);
+    	//database.UpdateEmail("09118460019", "jakelester@email.com");
+    	//database.UpdatePhoneNumber("09118460019", "6909118460");
+    	//database.UpdatePostalCode("09118460019", "38010");
+    	//database.PrintArrayList(database.ViewCompletedVaccinations("11018701926"));
+    	
     	database.con.close();
+    	
     	}
     }  
+    
 }
