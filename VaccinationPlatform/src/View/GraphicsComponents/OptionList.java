@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 
 public class OptionList extends JPanel {
 
-	ArrayList<OptButton> options = new ArrayList <OptButton> ();
+	public ArrayList<OptButton> options = new ArrayList <OptButton> ();
 	
 	JPanel parent;
 

@@ -20,4 +20,10 @@ public class MedicalUserPage extends UserPage {
 		leftPanel.options.selectOption(0);
 	}
 
+	@Override
+	void setUp() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

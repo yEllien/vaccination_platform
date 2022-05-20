@@ -34,7 +34,7 @@ abstract public class LoginPage extends JPanel {
 	VaccinationPlatformGUI frame;
 	
 	Color backgroundColor = CustomColors.light_blue; //CustomColors.lighter_blue;
-	Color panelColor = CustomColors.very_light_gray; //Colors.white;
+	Color panelColor = Color.white;//CustomColors.very_light_gray;
 	Color borderColor = CustomColors.light_gray;
 	Color darkFontColor = CustomColors.dark_gray;
 	Color regularFontColor = CustomColors.gray;
@@ -307,6 +307,7 @@ class CitizenLogin extends LoginPage {
 	void login() {
 		frame.userPage = new CitizenUserPage(frame);
 		frame.setContentPane(frame.userPage);
+		frame.userPage.setUp();
 		frame.revalidate();
 	}
 	
@@ -328,7 +329,7 @@ class MedicalLogin extends LoginPage {
 	void login() {
 		frame.userPage = new MedicalUserPage(frame);
 		frame.setContentPane(frame.userPage);
-		frame.userPage.load();
+		frame.userPage.setUp();
 		frame.revalidate();
 	}
 }

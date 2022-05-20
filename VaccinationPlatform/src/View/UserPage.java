@@ -26,18 +26,20 @@ import View.GraphicsComponents.RoundedLayeredPanel;
 import View.UserPage.LeftPanel;
 import View.UserPage.MainPanel;
 
-class UserPage extends JPanel {
+abstract class UserPage extends JPanel {
 	
 	VaccinationPlatformGUI frame;
 	
 	Color panelColor = CustomColors.light_blue;
-	Color backgroundColor = CustomColors.very_light_gray;
+	Color backgroundColor = Color.white;//CustomColors.very_light_gray;
 	
 	Color panelFontColor = CustomColors.darker_faded_blue;
 	Color panelOptionColor = CustomColors.faded_blue;
 	
 	LeftPanel leftPanel;
 	MainPanel mainPanel;
+	
+	int active;
 		
 	UserPage (VaccinationPlatformGUI frame) {
 		
@@ -71,11 +73,18 @@ class UserPage extends JPanel {
 		}
 	}
 	
-	void load () {
-		mainPanel.addContentPanel();
-		mainPanel.content.get(0).contentTitle.setText("ASDDD");
-		mainPanel.set(0);
+	void selectOption (int i) {
+		leftPanel.options.selectOption(i);
+		mainPanel.set(i);
 	}
+	
+	void createOptionAndPage (String optionName) {
+		mainPanel.addContentPanel();
+		mainPanel.content.get(mainPanel.content.size()-1).contentTitle.setText(optionName);
+		leftPanel.addOption(optionName);
+	}
+	
+	abstract void setUp ();
 	
 	
 	class LeftPanel extends JPanel {
@@ -174,6 +183,22 @@ class UserPage extends JPanel {
 			
 			return optionsPanel;
 		}
+		
+		void addOption (String optionName) {
+			
+			leftPanel.options.addOption(optionName);
+			int i = leftPanel.options.options.size()-1;
+			leftPanel.options.options.get(i).addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					System.out.println("Selecting "+i);
+					mainPanel.set(i);
+				}
+				
+			});
+		}
+		
 		
 		JPanel createLogout () {
 			
@@ -282,6 +307,8 @@ class UserPage extends JPanel {
 			content = new ArrayList<ContentPanel>();
 			
 			System.out.println("Before main pane size : "+getSize());
+			
+			active = -1;
 
 		}
 		
@@ -291,21 +318,22 @@ class UserPage extends JPanel {
 		}
 		
 		void addContentPanel (ContentPanel c) {
+			c.id = content.size();
 			content.add(c);
 		}
 		
 		void set(int i) {
-			System.out.println("after main pane size : "+mainPanel.getSize());
-			
-//			ContentPanel t = new ContentPanel();
-//			content.add(t);
-//			this.add(t);
 			
 			this.removeAll();
+			this.repaint();
 			this.add(content.get(i));
+			//leftPanel.options.selectOption(i);
+			active = i;
 		}
 		
 		class ContentPanel extends JPanel {
+			
+			int id;
 			
 			JLabel contentTitle;
 			
@@ -316,6 +344,7 @@ class UserPage extends JPanel {
 			int titleHeight;
 			
 			ContentPanel () {
+				
 				titleHeight = 100;
 				
 				this.setBackground(backgroundColor);

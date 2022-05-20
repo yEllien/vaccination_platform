@@ -18,4 +18,10 @@ public class AdminUserPage extends UserPage{
 		leftPanel.options.addOption("Appointment Information");
 		leftPanel.options.selectOption(0);
 	}
+
+	@Override
+	void setUp() {
+		// TODO Auto-generated method stub
+		
+	}
 }
