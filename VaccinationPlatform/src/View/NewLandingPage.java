@@ -19,8 +19,9 @@ import javax.swing.border.EmptyBorder;
 import View.GraphicsComponents.RoundPanel;
 import View.GraphicsComponents.RoundedBorder;
 import View.GraphicsComponents.RoundedComponent;
+import View.GraphicsComponents.RoundedLayeredPanel;
 
-public class LandingPage extends JPanel {
+public class NewLandingPage extends JPanel {
 	
 	VaccinationPlatformGUI frame;
 	
@@ -28,6 +29,7 @@ public class LandingPage extends JPanel {
 	Color panelColor = CustomColors.very_light_gray;
 	
 	JPanel mainPanel;
+	RoundedLayeredPanel basePanel;
 	JPanel leftPanel;
 	JPanel headerPanel;
 	JPanel optionPanel;
@@ -38,19 +40,43 @@ public class LandingPage extends JPanel {
 	
 	JLabel image;
 	
-	LandingPage (VaccinationPlatformGUI frame) {
+	NewLandingPage (VaccinationPlatformGUI frame) {
 		super();
 		
 		this.frame = frame;
 		setBackground(backgroundColor);
+		//this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setLayout(new GridBagLayout());
 		/*
-		setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		*/
+		
+		JPanel wrapper = new JPanel ();
+		wrapper.setPreferredSize(frame.d);
+		wrapper.setMinimumSize(wrapper.getPreferredSize());
+		wrapper.setMaximumSize(wrapper.getPreferredSize());
+		wrapper.setBackground(backgroundColor);
+		wrapper.setBounds(0,10, frame.getWidth()-100, frame.getHeight()-100);
+		//wrapper.setLayout(new GridBagLayout());
+		this.add(wrapper);
+		
+		System.out.println("Wrapper size : "+wrapper.getBounds());
+		
+		basePanel = new RoundedLayeredPanel(
+				wrapper, 
+				new Dimension(
+						wrapper.getPreferredSize().width-50,
+						wrapper.getPreferredSize().height-50),
+				panelColor, true,
+				panelColor, true);
+		
 		mainPanel = new JPanel();
 		mainPanel.setBackground(panelColor);
-		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));		
+		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
+		
+		basePanel.createLayer(mainPanel);
+		wrapper.add(basePanel);
+		this.revalidate();
 		
 		leftPanel = new JPanel();
 		leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
@@ -134,14 +160,12 @@ public class LandingPage extends JPanel {
 		gbc.gridheight = 4;
 		gbc.gridwidth = 4;
 		*/
-		this.add(mainPanel);
+		//this.add(mainPanel);
 		
 		//mainPanel.setPreferredSize(new Dimension(frame.getHeight()-300, frame.getWidth()-300));
 
 		//LineBorder line = new LineBorder(Color.blue, 2, true);
 		//setBorder(line);
-
-		setVisible(true);
 	}
 
 	void citizenLogin() {

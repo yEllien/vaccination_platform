@@ -1,0 +1,410 @@
+package View;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+
+import View.GraphicsComponents.OptButton;
+import View.GraphicsComponents.OptionList;
+import View.GraphicsComponents.RoundedComponent;
+import View.GraphicsComponents.RoundedLayeredPanel;
+import View.UserPage.LeftPanel;
+import View.UserPage.MainPanel;
+
+class UserPage extends JPanel {
+	
+	VaccinationPlatformGUI frame;
+	
+	Color panelColor = CustomColors.light_blue;
+	Color backgroundColor = CustomColors.very_light_gray;
+	
+	Color panelFontColor = CustomColors.darker_faded_blue;
+	Color panelOptionColor = CustomColors.faded_blue;
+	
+	LeftPanel leftPanel;
+	MainPanel mainPanel;
+		
+	UserPage (VaccinationPlatformGUI frame) {
+		
+		this.frame = frame;
+		
+		setBackground(Color.red);
+
+		leftPanel = new LeftPanel();
+		mainPanel = new MainPanel();
+		
+		
+		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		
+		add(leftPanel);
+		add(mainPanel);
+		
+		frame.revalidate();
+	}
+	
+	void setAccountName (String accountName) {
+		this.leftPanel.accountName.setText(accountName);
+	}
+	
+	void setAccountIcon (String icon_name) {
+		try {
+			ImageIcon img = new ImageIcon(ImageIO.read(new File(System.getProperty("user.dir")+"/images/"+icon_name)));			
+			this.leftPanel.accountIcon = new JLabel(img);
+		}
+		catch(Exception e) {
+			System.out.println(e);
+		}
+	}
+	
+	void load () {
+		mainPanel.addContentPanel();
+		mainPanel.content.get(0).contentTitle.setText("ASDDD");
+		mainPanel.set(0);
+	}
+	
+	
+	class LeftPanel extends JPanel {
+		
+		RoundedLayeredPanel base;
+		
+		JPanel componentsPanel;
+		JPanel accountInfo;
+		
+		JLabel accountIcon = new JLabel();
+		JLabel accountName = new JLabel();
+		
+		JLabel logoutLabel;
+		WhiteButton logoutButton;
+		WhiteButton yesLogoutButton;
+		FadedBlueButton noLogoutButton; 
+		
+		int activeOption = 0;
+		
+		OptionList options;
+		
+		LeftPanel () {
+						
+			this.setBounds(0,10, frame.getWidth()/4, frame.getHeight()-60);
+			this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+			this.setBackground(backgroundColor);
+
+			System.out.println("user page size : "+getBounds());
+			
+			base = new RoundedLayeredPanel (
+					this, 
+					new Dimension(getBounds().width-20, getBounds().height),
+					panelColor, true, 
+					panelColor, true
+					);
+			
+			componentsPanel = new JPanel();
+			componentsPanel.setBackground(panelColor);
+			componentsPanel.setLayout(new BoxLayout(componentsPanel, BoxLayout.Y_AXIS));
+			
+			int i = base.createLayer(componentsPanel);
+			this.add(base);
+			
+
+			JPanel accountInfoPanel = createAccountInfo();
+			
+			JPanel optionsPanel = createOptions();
+			
+			JPanel logoutPanel = createLogout();
+			
+			componentsPanel.add(Box.createGlue());
+			componentsPanel.add(accountInfoPanel);
+			componentsPanel.add(optionsPanel);
+			componentsPanel.add(logoutPanel);
+			componentsPanel.add(Box.createGlue());
+				
+		}
+		
+		JPanel createAccountInfo () {
+			
+			JPanel accountInfoPanelWrapper = new JPanel();
+			accountInfoPanelWrapper.setBackground(panelColor);
+			
+			JPanel accountInfoPanel = new JPanel();
+			accountInfoPanel.setLayout(new BoxLayout(accountInfoPanel, BoxLayout.Y_AXIS));
+			accountInfoPanel.setBackground(panelColor);
+			
+			accountName.setPreferredSize(new Dimension (
+							componentsPanel.getSize().width,40));
+			accountName.setMinimumSize(accountName.getPreferredSize());
+			accountName.setMaximumSize(accountName.getPreferredSize());
+			accountName.setHorizontalAlignment(SwingConstants.CENTER);			
+			accountName.setForeground(panelFontColor);
+			accountName.setText("Username");
+			
+			accountInfoPanel.add(accountName);
+			accountInfoPanelWrapper.add(accountInfoPanel);
+			accountInfoPanel.revalidate();
+			
+			return accountInfoPanelWrapper;
+		}
+		
+		JPanel createOptions () {
+			
+			JPanel optionsPanel = new JPanel();
+			optionsPanel.setBackground(panelColor);
+			
+			options = new OptionList (
+					componentsPanel,
+					new Dimension(componentsPanel.getWidth(), 50),
+					panelOptionColor, false,
+					panelOptionColor, false					
+					);
+			
+			optionsPanel.add(options);
+			
+			return optionsPanel;
+		}
+		
+		JPanel createLogout () {
+			
+			JPanel logoutPanel = new JPanel();
+			logoutPanel.setLayout(new BoxLayout(logoutPanel, BoxLayout.Y_AXIS));
+			logoutPanel.setPreferredSize(new Dimension (
+					getWidth(), 100));
+			logoutPanel.setMinimumSize(logoutPanel.getPreferredSize());
+			logoutPanel.setMaximumSize(logoutPanel.getPreferredSize());
+			logoutPanel.setBackground(panelColor);
+			
+			JPanel logoutConfirmPanel = new JPanel();
+			logoutConfirmPanel.setLayout(new BoxLayout(logoutConfirmPanel, BoxLayout.X_AXIS));
+			logoutConfirmPanel.setPreferredSize(new Dimension (
+					getWidth(), 50));
+			logoutConfirmPanel.setMinimumSize(logoutConfirmPanel.getPreferredSize());
+			logoutConfirmPanel.setMaximumSize(logoutConfirmPanel.getPreferredSize());
+			logoutConfirmPanel.setBackground(panelColor);
+			
+			JPanel logoutWrapper = new JPanel();
+			logoutWrapper.setBackground(panelColor);
+			
+			JPanel logoutButtonWrapper = new JPanel();
+			logoutButtonWrapper.setPreferredSize(new Dimension (
+					getWidth(), 50));
+			logoutButtonWrapper.setLayout(new BoxLayout(logoutButtonWrapper, BoxLayout.X_AXIS));
+			logoutButtonWrapper.setBackground(panelColor);
+			
+			logoutLabel = new JLabel("Are you sure you want to log out?");
+			logoutLabel.setPreferredSize(new Dimension (
+					componentsPanel.getWidth(), 60));
+			logoutLabel.setHorizontalAlignment(SwingConstants.CENTER);
+			//logoutLabel.setBackground(Color.DARK_GRAY);
+			logoutLabel.setVisible(false);
+			
+			logoutButton = new WhiteButton("Log out");
+			yesLogoutButton = new WhiteButton("Yes");
+			noLogoutButton = new FadedBlueButton("No");
+			
+			logoutConfirmPanel.add(Box.createGlue());
+			logoutConfirmPanel.add(yesLogoutButton);
+			logoutConfirmPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+			logoutConfirmPanel.add(noLogoutButton);
+			logoutConfirmPanel.add(Box.createGlue());
+			
+			logoutConfirmPanel.setVisible(false);
+			
+			logoutButton.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					logoutLabel.setVisible(true);
+					logoutButtonWrapper.setVisible(false);
+					logoutConfirmPanel.setVisible(true);
+				}
+				
+			});
+			
+			noLogoutButton.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					logoutLabel.setVisible(false);;
+					logoutButtonWrapper.setVisible(true);
+					logoutConfirmPanel.setVisible(false);
+				}
+				
+			});
+			
+			yesLogoutButton.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					frame.setContentPane(frame.landingPage);
+				}
+				
+			});
+			
+			logoutWrapper.add(logoutLabel);
+
+			logoutButtonWrapper.add(Box.createGlue());
+			logoutButtonWrapper.add(logoutButton);
+			logoutButtonWrapper.add(Box.createGlue());
+			
+			logoutPanel.add(logoutWrapper);
+			logoutPanel.add(logoutButtonWrapper);
+			logoutPanel.add(logoutConfirmPanel);
+			
+			return logoutPanel;
+		}
+	}
+	
+	class MainPanel extends JPanel{
+		
+		ArrayList<ContentPanel> content;
+		
+		MainPanel () {
+			
+			setPreferredSize(new Dimension(frame.getWidth()-leftPanel.getWidth(), frame.getHeight()));
+			setMinimumSize(getPreferredSize());
+			setMaximumSize(getPreferredSize());
+			//setBackground(backgroundColor);
+			setBackground(backgroundColor);
+			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+			
+			content = new ArrayList<ContentPanel>();
+			
+			System.out.println("Before main pane size : "+getSize());
+
+		}
+		
+		void addContentPanel () {
+			ContentPanel c = new ContentPanel();
+			addContentPanel(c);
+		}
+		
+		void addContentPanel (ContentPanel c) {
+			content.add(c);
+		}
+		
+		void set(int i) {
+			System.out.println("after main pane size : "+mainPanel.getSize());
+			
+//			ContentPanel t = new ContentPanel();
+//			content.add(t);
+//			this.add(t);
+			
+			this.removeAll();
+			this.add(content.get(i));
+		}
+		
+		class ContentPanel extends JPanel {
+			
+			JLabel contentTitle;
+			
+			RoundedLayeredPanel basePanel;
+			
+			JPanel contentPanel;
+			
+			int titleHeight;
+			
+			ContentPanel () {
+				titleHeight = 100;
+				
+				this.setBackground(backgroundColor);
+				this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+				this.setPreferredSize( new Dimension (
+						mainPanel.getSize().width,frame.getSize().height));
+				//this.setMinimumSize(getPreferredSize());
+				//this.setMaximumSize(getPreferredSize());
+
+				JPanel borderWrapper = makeBorder();
+				JPanel titleWrapper = makeTitle();
+
+				
+				basePanel.createLayer(titleWrapper);
+				borderWrapper.add(basePanel);
+				
+				contentPanel = makeContent();
+
+				/*
+				 */
+				
+				
+				this.add(Box.createGlue());
+				//this.add(titleWrapper);
+				this.add(borderWrapper);
+				this.add(contentPanel);
+				this.add(Box.createGlue());
+				
+				JLabel test = new JLabel("test");
+				contentPanel.add(test);
+				
+			}
+			
+			JPanel makeTitle () {
+				JPanel titleWrapper = new JPanel();
+				//titleWrapper.setLayout(new BoxLayout(titleWrapper, BoxLayout.Y_AXIS));
+				titleWrapper.setLayout(new GridBagLayout());
+				
+				titleWrapper.setBackground(panelColor);
+				titleWrapper.setPreferredSize(new Dimension(
+						mainPanel.getSize().width-titleHeight, titleHeight));
+				titleWrapper.setMinimumSize(titleWrapper.getPreferredSize());
+				titleWrapper.setMaximumSize(titleWrapper.getPreferredSize());
+				
+				contentTitle = new JLabel("Title");
+				contentTitle.setBackground(Color.green);
+				contentTitle.setHorizontalAlignment(SwingConstants.CENTER);
+				
+				//titleWrapper.add(Box.createGlue());
+				titleWrapper.add(contentTitle);
+				//titleWrapper.add(Box.createGlue());
+				
+				return titleWrapper;
+			}
+			
+			JPanel makeBorder () {
+				
+				basePanel = new RoundedLayeredPanel(
+						mainPanel.getBounds().x, 25, 
+						new Dimension(mainPanel.getSize().width-100, titleHeight),
+						panelColor, true, 
+						panelColor, true,
+						mainPanel.getBackground()
+						);
+				
+				JPanel borderWrapper = new JPanel();
+				borderWrapper.setLayout(new BoxLayout(borderWrapper, BoxLayout.X_AXIS));
+				//borderWrapper.setLayout(new FlowLayout());
+				borderWrapper.setBackground(backgroundColor);
+				borderWrapper.setPreferredSize(new Dimension (
+						mainPanel.getSize().width-100, titleHeight+50));
+				borderWrapper.setMinimumSize(borderWrapper.getPreferredSize());
+				borderWrapper.setMaximumSize(borderWrapper.getPreferredSize());
+			
+				System.out.println("Content panel main pane size : "+mainPanel.getBounds());
+				
+				return borderWrapper;
+			}
+			
+			JPanel makeContent () {
+				JPanel contentPanel = new JPanel();
+				contentPanel.setBackground(backgroundColor);
+				contentPanel.setPreferredSize(new Dimension(
+						mainPanel.getSize().width-100, frame.getSize().height-titleHeight-50));
+				contentPanel.setMinimumSize(contentPanel.getPreferredSize());
+				contentPanel.setMaximumSize(contentPanel.getPreferredSize());
+				
+				return contentPanel;
+			}
+		}
+	}
+}

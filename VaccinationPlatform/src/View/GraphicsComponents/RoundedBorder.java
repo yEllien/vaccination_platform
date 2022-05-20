@@ -1,4 +1,4 @@
-package View;
+package View.GraphicsComponents;
 
 import javax.swing.*;
 import java.awt.*;
@@ -7,7 +7,7 @@ import javax.swing.border.Border;
 public class RoundedBorder implements Border{
     private int r;
     private Color c;
-    RoundedBorder (int r, Color c) {
+    public RoundedBorder (int r, Color c) {
         this.r = r;
         this.c = c;
     }

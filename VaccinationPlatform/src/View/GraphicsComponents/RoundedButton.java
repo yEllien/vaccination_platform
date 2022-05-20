@@ -1,4 +1,4 @@
-package View;
+package View.GraphicsComponents;
 
 import java.awt.AWTEvent;
 import java.awt.AWTEventMulticaster;
@@ -32,6 +32,7 @@ public class RoundedButton extends JComponent {
     public RoundedButton() {
         this("");
         FontMetrics fm = getFontMetrics(getFont());
+        this.setFont(new Font(this.getFont().getFontName(), Font.BOLD, this.getFont().getSize()));
         this.setMinimumSize(new Dimension(fm.getHeight(), fm.stringWidth(label)));
         this.setMaximumSize(new Dimension(fm.getHeight(), fm.stringWidth(label)));
     }
@@ -151,10 +152,12 @@ public class RoundedButton extends JComponent {
      * Determine if click was inside round button.
      */
     @Override
-    public boolean contains(int x, int y) {
+    public boolean contains(int x, int y) {    	
         int mx = getSize().width / 2;
         int my = getSize().height / 2;
-        return (((mx - x) * (mx - x) + (my - y) * (my - y)) <= mx * mx);
+        boolean dx = (mx - x) * (mx - x) <= mx * mx;
+        boolean dy = ((my - y) * (my - y) <= my * my);
+        return (dx && dy);
     }
 
     /**
