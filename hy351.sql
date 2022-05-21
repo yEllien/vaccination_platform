@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Εξυπηρετητής: 127.0.0.1
--- Χρόνος δημιουργίας: 20 Μάη 2022 στις 09:47:53
+-- Χρόνος δημιουργίας: 21 Μάη 2022 στις 14:48:30
 -- Έκδοση διακομιστή: 10.4.22-MariaDB
 -- Έκδοση PHP: 8.1.0
 
@@ -159,14 +159,20 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateDosesAndState` (IN `ssn` VARC
      END IF;
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ViewAppointmentsBySSN` (IN `hospitalID` VARCHAR(5), IN `ssn` VARCHAR(11))  BEGIN
+	SELECT DISTINCT a.citizenSSN, c.firstName, c.lastName, a.doseNumber, a.appointmentDate, a.appointmentTime
+    FROM appointment a, books b, citizen c 
+    WHERE a.citizenSSN = ssn and b.citizenSSN = a.citizenSSN and b.hospitalID = hospitalID and c.SSN = ssn;
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `ViewBookedAppointments` (IN `ssn` VARCHAR(11))  BEGIN	
     SELECT b.citizenSSN, b.doseNumber, a.appointmentDate, a.appointmentTime, h.name
     FROM books b, appointment a, hospital h
     WHERE b.citizenSSN = ssn and a.citizenSSN = b.citizenSSN and h.hospitalID = b.hospitalID;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ViewCompletedVAccinations` (IN `ssn` VARCHAR(11))  BEGIN
-SELECT DISTINCT a.citizenSSN, a.doseNumber, a.appointmentDate, a.appointmentTime, h.name
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ViewCompletedVaccinations` (IN `ssn` VARCHAR(11))  BEGIN
+	SELECT DISTINCT a.citizenSSN, a.doseNumber, a.appointmentDate, a.appointmentTime, h.name
     FROM books b, appointment a, hospital h, citizen c
     WHERE b.citizenSSN = ssn and a.citizenSSN = ssn and h.hospitalID = b.hospitalID and c.vaccinationState != 'not vaccinated';
 END$$
@@ -317,6 +323,34 @@ INSERT INTO `citizen` (`firstName`, `lastName`, `SSN`, `gender`, `dateOfBirth`, 
 ('Kyle', 'Dalton', '26116473859', 'male', '1964-11-26', 'not vaccinated', 0),
 ('Jayden', 'Ortiz', '27108645329', 'female', '1986-10-27', 'not vaccinated', 0),
 ('Roger', 'Villegas', '29056154620', 'male', '1961-05-29', 'not vaccinated', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Δομή πίνακα για τον πίνακα `communicationinfo`
+--
+
+CREATE TABLE `communicationinfo` (
+  `SSN` varchar(11) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `phoneNumber` varchar(10) DEFAULT NULL,
+  `postalCode` varchar(5) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Άδειασμα δεδομένων του πίνακα `communicationinfo`
+--
+
+INSERT INTO `communicationinfo` (`SSN`, `email`, `phoneNumber`, `postalCode`) VALUES
+('11018701926', 'kennamanning@email.com', '6911018701', '20300'),
+('13117690374', 'ricksal@email.com', '6913117690', '49090'),
+('16096536000', 'arellano@email.com', '6916096536', '71110'),
+('18079318729', 'ferali93@email.com', '6918079318', '23105'),
+('18090119872', 'brycenval@email.com', '6918090119', '32900'),
+('25036650948', 'bushmckinley@email.com', '6925036650', '23400'),
+('26055743567', 'jesdeleon1234@email.com', '6926055743', '52020'),
+('26116473859', 'kylejdalton@email.com', '6926116473', '45700'),
+('09118460019', 'jakelester@email.com', '6909118460', '38010');
 
 -- --------------------------------------------------------
 
