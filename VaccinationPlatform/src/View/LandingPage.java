@@ -44,10 +44,7 @@ public class LandingPage extends JPanel {
 		this.frame = frame;
 		setBackground(backgroundColor);
 		setLayout(new GridBagLayout());
-		/*
-		setLayout(new GridBagLayout());
-		GridBagConstraints gbc = new GridBagConstraints();
-		*/
+
 		mainPanel = new JPanel();
 		mainPanel.setBackground(panelColor);
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));		
@@ -68,11 +65,9 @@ public class LandingPage extends JPanel {
 		
 		optionPanel = new JPanel();		
 		optionPanel.setLayout(new BoxLayout(optionPanel, BoxLayout.Y_AXIS));
-		//optionPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 		optionPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		optionPanel.setBackground(panelColor);
 		optionPanel.setBorder(new EmptyBorder(0,100,0,0));
-		//optionPanel.setBorder(new RoundedBorder(5, new Color(0,0,0,0)));
 		
 		JLabel header = new JLabel();
 		header.setText("Covid-19 Vaccination");
@@ -127,20 +122,8 @@ public class LandingPage extends JPanel {
 		}
 		
 		
-		/*
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.gridheight = 4;
-		gbc.gridwidth = 4;
-		*/
 		this.add(mainPanel);
 		
-		//mainPanel.setPreferredSize(new Dimension(frame.getHeight()-300, frame.getWidth()-300));
-
-		//LineBorder line = new LineBorder(Color.blue, 2, true);
-		//setBorder(line);
-
 		setVisible(true);
 	}
 

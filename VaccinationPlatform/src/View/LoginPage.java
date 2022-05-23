@@ -151,7 +151,6 @@ abstract public class LoginPage extends JPanel {
 		
 		centerField = new TextField();
 		centerField.setPlaceholder("Placeholder");
-		//usernameField.setPreferredSize(new Dimension(200, 30));
 		centerField.setName("centerField");
 		centerField.setMinimumSize(new Dimension(200, 30));
 		centerField.setMaximumSize(new Dimension(200, 30));
@@ -166,7 +165,6 @@ abstract public class LoginPage extends JPanel {
 				borderColor, false, 
 				borderColor, true,
 				panelColor);
-		//usernameBorder.setBackground(Color.decode("#DDDDDD"));
 		centerBorder.add(centerField);
 		centerBorder.setAlignmentX(CENTER_ALIGNMENT);
 		
@@ -174,7 +172,6 @@ abstract public class LoginPage extends JPanel {
 		usernameField = new TextField();
 		usernameField.setPlaceholder("Placeholder");
 		usernameField.setName("usernameField");
-		//usernameField.setPreferredSize(new Dimension(200, 30));
 		usernameField.setMinimumSize(new Dimension(200, 30));
 		usernameField.setMaximumSize(new Dimension(200, 30));
 		usernameField.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -188,7 +185,6 @@ abstract public class LoginPage extends JPanel {
 				borderColor, false, 
 				borderColor, true,
 				panelColor);
-		//usernameBorder.setBackground(Color.decode("#DDDDDD"));
 		usernameBorder.add(usernameField);
 		usernameBorder.setAlignmentX(CENTER_ALIGNMENT);
 		
@@ -208,7 +204,6 @@ abstract public class LoginPage extends JPanel {
 				borderColor, false, 
 				borderColor, true,
 				panelColor);
-		//passwordBorder.setBackground(Color.decode("#DDDDDD"));
 		passwordBorder.add(passwordField);
 		passwordBorder.setAlignmentX(CENTER_ALIGNMENT);
 		
@@ -257,18 +252,6 @@ abstract public class LoginPage extends JPanel {
 		
 		inputPanel.add(fieldsPanel);
 		
-		/*
-		//inputPanel.add(usernameField);
-		inputPanel.add(centerBorder);
-		centerBorder.setVisible(false);
-		inputPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-		inputPanel.add(usernameBorder);
-		inputPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-		inputPanel.add(passwordBorder);
-		inputPanel.add(Box.createRigidArea(new Dimension(0, 30)));
-		//inputPanel.add(passwordField);
-		*/
-		
 		inputPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 		inputPanel.add(loginButton);
 		inputPanel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -308,6 +291,7 @@ class CitizenLogin extends LoginPage {
 		frame.userPage = new CitizenUserPage(frame);
 		frame.setContentPane(frame.userPage);
 		frame.userPage.setUp();
+		frame.userPage.reload();
 		frame.revalidate();
 	}
 	
@@ -330,6 +314,7 @@ class MedicalLogin extends LoginPage {
 		frame.userPage = new MedicalUserPage(frame);
 		frame.setContentPane(frame.userPage);
 		frame.userPage.setUp();
+		frame.userPage.reload();
 		frame.revalidate();
 	}
 }
@@ -346,6 +331,8 @@ class AdminLogin extends LoginPage {
 	void login() {
 		frame.userPage = new AdminUserPage(frame);
 		frame.setContentPane(frame.userPage);
+		frame.userPage.setUp();
+		frame.userPage.reload();
 		frame.revalidate();
 	}
 

@@ -16,6 +16,8 @@ public class CustomColors {
 	public static String DARKER_FADED_BLUE = "#364862";
 	public static String FADED_LIGHTER_BLUE = "#919EB1";
 	public static String DARKER_FADED_LIGHTER_BLUE = "#6E7886";
+	public static String GREEN = "#AADEF3";//"#60D7D2";//"#99E8C9";
+	public static String RED = "#FCA58D"; //"#FB7A57"; //"#FFAF94";
 	
 	public static Color orange = Color.decode(ORANGE);
 	public static Color very_light_gray = Color.decode(VERY_LIGHT_GRAY);
@@ -30,4 +32,6 @@ public class CustomColors {
 	public static Color darker_faded_blue = Color.decode(DARKER_FADED_BLUE);
 	public static Color faded_lighter_blue = Color.decode(FADED_LIGHTER_BLUE);
 	public static Color darker_faded_lighter_blue = Color.decode(DARKER_FADED_LIGHTER_BLUE);
+	public static Color green = Color.decode(GREEN);
+	public static Color red = Color.decode(RED);
 }

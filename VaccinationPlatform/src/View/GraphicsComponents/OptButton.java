@@ -31,7 +31,6 @@ public class OptButton extends RoundedLayeredPanel {
 	public OptButton(JPanel parent, Dimension d, Color fill, boolean filled, Color line, boolean lined) {
 
 		super(parent, new Dimension(d.width-10, d.height-20), fill, filled, line, lined);
-		System.out.println("Dimension : "+d.getSize());
 		
 		this.parent = parent;
 		
@@ -69,9 +68,6 @@ public class OptButton extends RoundedLayeredPanel {
 		
 		unclicked();
 		
-		System.out.println("rounded border : "+this.getBounds());
-		System.out.println("button layer   : "+buttonLayer.getBounds());
-		System.out.println("button 		   : "+button.getBounds());
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -81,7 +77,6 @@ public class OptButton extends RoundedLayeredPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(id + "clicked------------------------");
 				clicked();
 			}
 			
@@ -98,7 +93,6 @@ public class OptButton extends RoundedLayeredPanel {
 	}
 	
 	public void clicked () {
-		System.out.println("Clicked :");
 		setFill(fill, !filled);
 		setLine(line, !lined);
 		active = true;
@@ -115,11 +109,9 @@ public class OptButton extends RoundedLayeredPanel {
 			buttonLayer.setBackground(fill);
 			button.setForeground(Color.white);
 		}
-		System.out.println("=============================");
 	}
 	
 	public void unclicked () {
-		System.out.println("Unclicked :");
 		setFill(fill, filled);
 		setLine(line, lined);
 		active = false;
@@ -134,7 +126,6 @@ public class OptButton extends RoundedLayeredPanel {
 			buttonLayer.setBackground(parent.getBackground());
 			button.setForeground(fill);
 		}
-		System.out.println("=============================");
 	}
 	
 }

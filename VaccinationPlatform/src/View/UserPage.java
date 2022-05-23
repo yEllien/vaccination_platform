@@ -2,6 +2,7 @@ package View;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
@@ -56,6 +57,7 @@ abstract class UserPage extends JPanel {
 		add(leftPanel);
 		add(mainPanel);
 		
+		
 		frame.revalidate();
 	}
 	
@@ -85,7 +87,7 @@ abstract class UserPage extends JPanel {
 	}
 	
 	abstract void setUp ();
-	
+	abstract void reload();
 	
 	class LeftPanel extends JPanel {
 		
@@ -112,8 +114,6 @@ abstract class UserPage extends JPanel {
 			this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 			this.setBackground(backgroundColor);
 
-			System.out.println("user page size : "+getBounds());
-			
 			base = new RoundedLayeredPanel (
 					this, 
 					new Dimension(getBounds().width-20, getBounds().height),
@@ -305,9 +305,6 @@ abstract class UserPage extends JPanel {
 			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 			
 			content = new ArrayList<ContentPanel>();
-			
-			System.out.println("Before main pane size : "+getSize());
-			
 			active = -1;
 
 		}
@@ -331,6 +328,10 @@ abstract class UserPage extends JPanel {
 			active = i;
 		}
 		
+		void addToContentPanel (int i, Component c) {
+			content.get(i).contentPanel.add(c);
+		}
+		
 		class ContentPanel extends JPanel {
 			
 			int id;
@@ -351,8 +352,6 @@ abstract class UserPage extends JPanel {
 				this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 				this.setPreferredSize( new Dimension (
 						mainPanel.getSize().width,frame.getSize().height));
-				//this.setMinimumSize(getPreferredSize());
-				//this.setMaximumSize(getPreferredSize());
 
 				JPanel borderWrapper = makeBorder();
 				JPanel titleWrapper = makeTitle();
@@ -373,14 +372,10 @@ abstract class UserPage extends JPanel {
 				this.add(contentPanel);
 				this.add(Box.createGlue());
 				
-				JLabel test = new JLabel("test");
-				contentPanel.add(test);
-				
 			}
 			
 			JPanel makeTitle () {
 				JPanel titleWrapper = new JPanel();
-				//titleWrapper.setLayout(new BoxLayout(titleWrapper, BoxLayout.Y_AXIS));
 				titleWrapper.setLayout(new GridBagLayout());
 				
 				titleWrapper.setBackground(panelColor);
@@ -412,15 +407,12 @@ abstract class UserPage extends JPanel {
 				
 				JPanel borderWrapper = new JPanel();
 				borderWrapper.setLayout(new BoxLayout(borderWrapper, BoxLayout.X_AXIS));
-				//borderWrapper.setLayout(new FlowLayout());
 				borderWrapper.setBackground(backgroundColor);
 				borderWrapper.setPreferredSize(new Dimension (
 						mainPanel.getSize().width-100, titleHeight+50));
 				borderWrapper.setMinimumSize(borderWrapper.getPreferredSize());
 				borderWrapper.setMaximumSize(borderWrapper.getPreferredSize());
 			
-				System.out.println("Content panel main pane size : "+mainPanel.getBounds());
-				
 				return borderWrapper;
 			}
 			

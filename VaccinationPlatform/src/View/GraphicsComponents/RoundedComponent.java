@@ -45,13 +45,11 @@ public class RoundedComponent extends JPanel {
 	
 	public void paint(Graphics g) {
 		super.paint(g);
-		System.out.println(g);
 		System.out.println(times);
 		times++;
 		
 		if(filled)
 		{
-			System.out.println("Filled");
 			//g.setColor(fill);
 			g.setColor(fill);
 			g.fillRoundRect(0, 0, (int)d.getWidth() - 1, (int)d.getHeight() - 1, 20, 20);			
@@ -62,7 +60,6 @@ public class RoundedComponent extends JPanel {
 		
 		if (lined)
 		{
-			System.out.println("Lined");
 			g.setColor(line);
 			g.drawRoundRect(0, 0, (int)d.getWidth() - 1, (int)d.getHeight() - 1, 20, 20);			
 		}

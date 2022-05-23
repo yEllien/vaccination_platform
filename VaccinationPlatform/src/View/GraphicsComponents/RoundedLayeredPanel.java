@@ -30,7 +30,6 @@ public class RoundedLayeredPanel extends JLayeredPane {
 		
 		rounded = new RoundedComponent(d, fill, filled, line, lined, c);
 		
-		System.out.println("========Size:"+d);
 		
 		JPanel layer = new JPanel();
 		layer.setBounds(this.getBounds());
@@ -39,7 +38,6 @@ public class RoundedLayeredPanel extends JLayeredPane {
 		layer.add(rounded);
 		
 		layers.add(layer);
-		System.out.println("Layer 0 bounds : "+layer.getBounds());
 		this.add(layer, new Integer(1));
 	}
 		
@@ -54,6 +52,7 @@ public class RoundedLayeredPanel extends JLayeredPane {
 	
 	public int createLayer (JPanel layer) {
 		JPanel l0 = layers.get(0);
+		
 		layer.setBounds(
 				l0.getBounds().x+5,
 				l0.getBounds().y+5,
