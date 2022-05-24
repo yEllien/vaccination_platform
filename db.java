@@ -391,6 +391,24 @@ public class db {
 		return dailyAppointments;    	
     }
     
+    public ArrayList<String[]> GetAppointmentsBySSN(String hospitalID, String ssn) throws SQLException{
+    	
+		CallableStatement st = con.prepareCall("call ViewAppointmentsBySSN(?,?);");
+		ArrayList<String[]> appointments = new ArrayList<String[]>();
+
+		ResultSet rs;
+		st.setString(1, hospitalID);
+		st.setString(2, ssn);
+		rs = st.executeQuery();
+		
+		appointments =  ResultSetArray(rs);
+		
+		rs.close();
+		st.close();
+		
+		return appointments;    	
+    }
+    
     public void ConfirmVaccination(String ssn, int doseNumber) throws SQLException {
     	UpdateDosesAndVaccinationState(ssn, doseNumber);
     }
