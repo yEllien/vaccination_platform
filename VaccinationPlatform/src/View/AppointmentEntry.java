@@ -8,11 +8,13 @@ import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.security.KeyPair;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -23,24 +25,35 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
+import Controller.Appointment;
 import View.Calendar.TimeslotColumn;
 import View.Calendar.TimeslotEntry;
 import View.GraphicsComponents.CustomButton;
+import View.GraphicsComponents.TextField;
+
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 
 class MedicalCenter {
 	
-	int id;
+	String id;
 	String name;
 	String vaccine;
 	
-	MedicalCenter (int id, String name, String vaccine) {
+	MedicalCenter (String id, String name, String vaccine) {
 		this.id = id;
 		this.name = name;
 		this.vaccine = vaccine;
@@ -60,13 +73,11 @@ public class AppointmentEntry extends JPanel {
 	
 	//ArrayList<Timeslot> timeslotList;
 	//JPanel timeslots;
+	JPanel calendarWrapper;
 	Calendar calendar;
-	
-	String doseNoStr;
-	String medicalCenterStr;
-	String vaccineNameStr;
-	String dateStr;
-	int statusInt;
+
+	Appointment appointment;
+	CitizenUser citizen;
 	
 	JPanel border;
 	
@@ -82,21 +93,24 @@ public class AppointmentEntry extends JPanel {
 	JPanel statusPanel;
 	JPanel confirmationPanel;
 	JPanel abortConfirmationPanel;
+	JPanel appointmentConfirmationPanel;
+	
+	CustomButton confirmAppointmentButton;
+	
+	ActionListener reloadAppointments;
 	
 	AppointmentEntry (
-			String doseNoStr, 
-			String medicalCenterStr, 
-			String vaccineNameStr,
-			String dateStr,
-			int statusInt,
+			CitizenUser citizen,
+			Appointment appointment,
+			String postalCode,
 			int width,
-			Color color) {
+			Color color,
+			ActionListener l) {
 		
-		this.doseNoStr = doseNoStr;
-		this.medicalCenterStr = medicalCenterStr;
-		this.vaccineNameStr = vaccineNameStr;
-		this.dateStr = dateStr;
-		this.statusInt = statusInt;
+		this.citizen = citizen;
+		
+		this.appointment = appointment;
+		
 		this.maxWidth = width;
 		this.backgroundColor = color;
 		
@@ -125,7 +139,7 @@ public class AppointmentEntry extends JPanel {
 		doseWrapper.setPreferredSize(new Dimension(tw, maxHeight));
 		
 		JLabel dose = new JLabel();
-		dose.setText("Dose "+doseNoStr);
+		dose.setText("Dose "+appointment.getDoseNumber());
 		dose.setForeground(backgroundColor);
 		dose.setHorizontalAlignment(JLabel.CENTER);
 		dose.setFont(new Font(getFont().getFontName(), Font.BOLD, getFont().getSize()));
@@ -137,21 +151,53 @@ public class AppointmentEntry extends JPanel {
 		statusPanel.setPreferredSize(new Dimension(maxWidth/24, maxHeight));
 		statusPanel.setMinimumSize(statusPanel.getPreferredSize());
 		
+		makeAppointment();
 		yaxisContent.add(content);
 		
 		border.add(yaxisContent);
 		this.add(border);
 		
-		if (statusInt == -1) {
+		this.reloadAppointments = l;
+		
+		confirmAppointmentButton = new CustomButton("Confirm", CustomColors.dark_blue, Color.white);
+	}
+	
+	void makeAppointment() {
+		
+		switch (appointment.getStatus()) {
+		case -1 :
+			makeNoAppointment();
+			break;
+		
+		case 0:
+			makeBookedAppointment();
+			break;
+			
+		case 1:
+			makeCompletedAppointment();
+			break;
+			
+		default:
 			makeNoAppointment();
 		}
+	}
+	
+	void addAppointmentComps() {
+		switch (appointment.getStatus()) {
+		case -1 :
+			addNoAppointmentComps();
+			break;
 		
-		else if (statusInt == 0) {
-			makeBookedAppointment();
-		}
-		
-		else if (statusInt == 1) {
-			makeCompletedAppointment();
+		case 0:
+			addBookedAppointmentComps();
+			break;
+			
+		case 1:
+			addCompletedAppointmentComps();
+			break;
+			
+		default:
+			makeNoAppointment();
 		}
 	}
 	
@@ -191,6 +237,25 @@ public class AppointmentEntry extends JPanel {
 	
 	void makeCancelOption () {
 		
+		JPanel cancellationFailurePanel = new JPanel();
+		cancellationFailurePanel.setLayout(
+				new BoxLayout(
+						cancellationFailurePanel, BoxLayout.X_AXIS));
+		cancellationFailurePanel.setPreferredSize(
+				new Dimension(
+							dataPanel.getPreferredSize().width
+							+statusPanel.getPreferredSize().width, 30)
+						);
+		
+		JLabel cancellationFailureLabel = new JLabel();
+		CustomButton okButton = new CustomButton("OK", CustomColors.dark_blue, Color.white);
+		
+		cancellationFailurePanel.add(Box.createGlue());
+		cancellationFailurePanel.add(cancellationFailureLabel);
+		cancellationFailurePanel.add(Box.createGlue());
+		cancellationFailurePanel.add(okButton);
+		cancellationFailurePanel.add(Box.createGlue());
+		
 		Icon icon = new ImageIcon(System.getProperty("user.dir")+"/images/cancel.png");
 		JButton status = new JButton (icon);
 		status.setBorder(new EmptyBorder(0,0,0,0));
@@ -203,12 +268,25 @@ public class AppointmentEntry extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				//TODO request appoointment cancellation from Database
+				
 				content.remove(dataPanel);
 				content.remove(statusPanel);
 				content.add(confirmationPanel);
 				invalidate();
 				revalidate();
 				repaint();
+			}
+			
+		});
+		
+		okButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				content.remove(cancellationFailurePanel);
+				addAppointmentComps();
 			}
 			
 		});
@@ -241,9 +319,12 @@ public class AppointmentEntry extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				/*
+				 */
 				content.remove(confirmationPanel);
 				content.add(dataPanel);
 				content.add(statusPanel);
+				//addAppointmentComps();
 				revalidate();
 				repaint();
 			}
@@ -254,12 +335,21 @@ public class AppointmentEntry extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				boolean cancellationSuccess = true;
+
 				clear();
-				statusInt = -1;
-				makeAddOption();
-				addNoAppointmentComps();
-				revalidate();
-				repaint();
+				if (cancellationSuccess) {
+					int doseno = appointment.getDoseNumber();
+					appointment = new Appointment(
+								appointment.getSSN(),
+								doseno);
+					makeAppointment();
+					revalidate();
+					repaint();
+				}
+				else {
+					addAppointmentComps();
+				}
 				
 			}
 			
@@ -417,9 +507,19 @@ public class AppointmentEntry extends JPanel {
 				
 				MedicalCenter selected = (MedicalCenter) medicalCenters.getSelectedItem();
 				//request medical center's data
+				if (calendar!=null)
+					yaxisContent.remove(calendarWrapper);
+				
+				calendarWrapper = new JPanel();
+				calendarWrapper.setBackground(backgroundColor);
+				calendarWrapper.setLayout(new BoxLayout(calendarWrapper, BoxLayout.Y_AXIS));
+				
 				makeCalendar(); 
 				calendar.setWidth(maxWidth-100);
-				yaxisContent.add(calendar);
+
+				calendarWrapper.add(calendar);
+				yaxisContent.add(calendarWrapper);
+				
 				revalidate();
 				repaint();
 			}
@@ -430,10 +530,12 @@ public class AppointmentEntry extends JPanel {
 	}
 	
 	void loadMedicalCenters () {
+		
+		//TODO request medical centers by postal code
 		medicalCenterPairs = new MedicalCenter[] {
-				new MedicalCenter(-1, "-- Select medical center", " vaccine"),
-				new MedicalCenter(0, "Medical Center of Chania", "Moderna"),
-				new MedicalCenter(1, "Princeton Plainsboro Hospital", "Pfizer")
+				new MedicalCenter("-1", "-- Select medical center", " vaccine"),
+				new MedicalCenter("12", "Medical Center of Chania", "Moderna"),
+				new MedicalCenter("21", "Princeton Plainsboro Hospital", "Pfizer")
 		};
 	}
 	
@@ -453,28 +555,34 @@ public class AppointmentEntry extends JPanel {
 		String vacc;
 		String date;
 		String day;
-		
-		CustomButton confirm = new CustomButton("Confirm", CustomColors.dark_blue, Color.white);
-		
-		confirm.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				//update database
-				clear();
-				makeBookedAppointment();
-				revalidate();
-				repaint();
-			}
-			
-		});
-		
+				
 		selectedPanel.add(Box.createGlue());
 		selectedPanel.add(selectedLabel);
 		selectedPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-		selectedPanel.add(confirm);
+		selectedPanel.add(confirmAppointmentButton);
 		selectedPanel.add(Box.createGlue());
 		
+		confirmAppointmentButton.addActionListener(new ActionListener () {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				clear();
+				content.add(doseWrapper);
+				content.add(Box.createGlue());
+				makeAppointmentConfirmation();
+				yaxisContent.add(Box.createRigidArea(
+							new Dimension(maxWidth, 10)
+						));
+				yaxisContent.add(appointmentConfirmationPanel);
+				revalidate();
+				repaint();
+				
+				// TODO update database
+				//database.bookappointment(this.appointment);
+			}
+			
+		});
+		//confirmAppointmentButton.addActionListener(reloadAppointments);
 		
 		for (TimeslotColumn column : calendar.timeslotColumn) {
 			for (TimeslotEntry entry : column.timeslots) {
@@ -484,22 +592,29 @@ public class AppointmentEntry extends JPanel {
 					public void actionPerformed(ActionEvent e) {
 						
 						MedicalCenter selectedCenter = (MedicalCenter) medicalCenters.getSelectedItem();
+						String day = calendar.dayPanel[column.id].day.getText();
+						String date = calendar.dayPanel[column.id].date.getText();
+						String time = entry.getText();
 						
-						medicalCenterStr = selectedCenter.name; 
-						vaccineNameStr = selectedCenter.vaccine;
-						dateStr = 
-								calendar.dayPanel[column.id].day.getText() + ", "+
-								calendar.dayPanel[column.id].date.getText();						
-						
-						selectedLabel.setText(
-								medicalCenterStr + 
-								", "+
-								dateStr+
-								", "+
-								entry.getText()
+						appointment = new Appointment(
+									appointment.getSSN(),
+									selectedCenter.id,
+									"Medical center", //TODO get medical center name from id
+									selectedCenter.vaccine,
+									appointment.getDoseNumber(),
+									date,
+									time,
+									0
 								);
 						
-						yaxisContent.add(selectedPanel);
+						selectedLabel.setText(
+									selectedCenter.name + ", "+
+									day+", "+
+									date+", "+
+									time
+								);
+						
+						calendarWrapper.add(selectedPanel);
 						revalidate();
 						repaint();
 					}
@@ -508,6 +623,147 @@ public class AppointmentEntry extends JPanel {
 			}
 		}		
 		
+	}
+	
+	void makeAppointmentConfirmation () {
+		
+		appointmentConfirmationPanel = new JPanel();
+		appointmentConfirmationPanel.setBackground(backgroundColor);
+		appointmentConfirmationPanel.setLayout(
+				new BoxLayout(appointmentConfirmationPanel, BoxLayout.Y_AXIS));
+		appointmentConfirmationPanel.setPreferredSize(
+				new Dimension(maxHeight, 100));
+		
+		JLabel timerLabel = new JLabel ();
+		timerLabel.setBackground(backgroundColor);
+		timerLabel.setBorder(BorderFactory.createLineBorder(CustomColors.red, 3));
+		timerLabel.setAlignmentX(CENTER_ALIGNMENT);
+		
+		JLabel instructions = new JLabel ();
+		instructions.setText("Enter the 4-digit code you received by e-mail (or a pop-up)");
+		instructions.setAlignmentX(CENTER_ALIGNMENT);
+		
+		TextField codeField = new TextField();
+		codeField.setPlaceholder("x x x x");
+		codeField.setPreferredSize(new Dimension(70, 30));
+		codeField.setBorder(BorderFactory.createLineBorder(CustomColors.dark_blue, 3));
+		codeField.setMaximumSize(codeField.getPreferredSize());
+		codeField.setHorizontalAlignment(SwingConstants.CENTER);
+		codeField.setAlignmentX(CENTER_ALIGNMENT);
+
+		String code = String.format("%04d", new Random().nextInt(10000));
+		
+		Timer timer = new Timer ("Timer");
+		
+		TimerTask countdown = new TimerTask() {
+			
+			int minutes = 2;
+			int seconds = 0;
+			DecimalFormat dFormat = new DecimalFormat("00");
+			
+			public void run () {
+				timerLabel.setText(getMinutes()+":"+getSeconds());
+				
+				if(seconds==0) {
+					if (minutes==0) {
+						codeField.setEditable(false);
+						for (FocusListener l : codeField.getFocusListeners())
+							codeField.removeFocusListener(l);
+						cancel();
+						timer.cancel(); 
+						timer.purge();
+						
+						makeConfirmationFailure();
+						
+						return;
+					}
+					minutes--;
+					seconds=59;
+					return;
+				}
+				seconds--;
+			}
+			
+			String getMinutes() {
+				return dFormat.format(minutes);
+			}
+			
+			String getSeconds() {
+				return dFormat.format(seconds);
+			}
+		};
+		
+		codeField.getDocument().addDocumentListener(new DocumentListener() {
+			  public void changedUpdate(DocumentEvent e) {
+				  checkInput();
+			  }
+			  public void removeUpdate(DocumentEvent e) {
+				  checkInput();
+			  }
+			  public void insertUpdate(DocumentEvent e) {
+				  checkInput();
+			  }
+			  
+			  public void checkInput () {
+				  if (codeField.getText().equals(code)) {
+					  //TODO
+					  //Confirmation successful!
+					  //update database with the appointment this.appointment
+					  System.out.println("okay");
+					  citizen.reloadAppointments();
+					  return;
+				  }
+			  }
+		});
+		
+		appointmentConfirmationPanel.add(Box.createGlue());
+		appointmentConfirmationPanel.add(timerLabel);
+		appointmentConfirmationPanel.add(Box.createGlue());
+		appointmentConfirmationPanel.add(instructions);
+		appointmentConfirmationPanel.add(Box.createGlue());
+		appointmentConfirmationPanel.add(codeField);
+		appointmentConfirmationPanel.add(Box.createGlue());
+		
+		long delay = 1L;
+		timer.scheduleAtFixedRate(countdown, 0, 1000L);
+		
+		revalidate();
+		repaint();
+		
+		JDialog dialog = new JOptionPane(code).createDialog("Confirmation Code");
+		//dialog.add(new JLabel(code));
+		dialog.setModal(false);
+		dialog.show();
+	}
+	
+	void makeConfirmationFailure () {
+		
+		JLabel failureLabel = new JLabel();
+		failureLabel.setText("The appointment was not confirmed and the timeslot has been released.");
+		failureLabel.setAlignmentX(CENTER_ALIGNMENT);
+		failureLabel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+		
+		CustomButton okButton = new CustomButton("OK", CustomColors.dark_blue, Color.white);
+		okButton.setAlignmentX(CENTER_ALIGNMENT);
+		
+		okButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				clear();
+				citizen.reloadAppointments();
+				makeAppointment();
+			}
+			
+		});
+		
+		yaxisContent.add(failureLabel);
+		yaxisContent.add(okButton);
+		yaxisContent.add(Box.createRigidArea(
+				new Dimension(0,20)));
+		
+		revalidate();
+		repaint();
 	}
 	
 	void setAppointmentData () {
@@ -535,7 +791,7 @@ public class AppointmentEntry extends JPanel {
 		//dataPanel.add(Box.createGlue());
 		
 		//nedical center
-		JLabel medicalCenter = new JLabel(medicalCenterStr);
+		JLabel medicalCenter = new JLabel(appointment.getMedicalCenterID());
 		medicalCenter.setBackground(backgroundColor);
 		medicalCenter.setHorizontalAlignment(SwingConstants.CENTER);
 		//tw = rmw/3;
@@ -545,7 +801,7 @@ public class AppointmentEntry extends JPanel {
 		dataPanel.add(medicalCenter);//content.add(medicalCenter);
 		dataPanel.add(new Separator());//content.add(new Separator());
 		
-		JLabel vaccineName = new JLabel(vaccineNameStr);
+		JLabel vaccineName = new JLabel(appointment.getVaccineName());
 		vaccineName.setBackground(backgroundColor);
 		vaccineName.setHorizontalAlignment(SwingConstants.CENTER);
 		tw = rmw/4;
@@ -555,7 +811,7 @@ public class AppointmentEntry extends JPanel {
 		dataPanel.add(new Separator());//content.add(new Separator());
 		
 		//Date
-		JLabel date = new JLabel (dateStr);
+		JLabel date = new JLabel (appointment.getDate()+", "+appointment.getTime());
 		date.setBackground(backgroundColor);
 		date.setHorizontalAlignment(SwingConstants.CENTER);
 		//tw = rmw/3;
@@ -565,6 +821,10 @@ public class AppointmentEntry extends JPanel {
 		date.setMinimumSize(date.getPreferredSize());
 		
 		dataPanel.add(date); //content.add(date);
+		
+	}
+	
+	public void confirmAppointmentBooking () {
 		
 	}
 	
@@ -583,6 +843,5 @@ public class AppointmentEntry extends JPanel {
 			this.setVerticalAlignment(JLabel.TOP);
 		}
 	}
-	
 	
 }

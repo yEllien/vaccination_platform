@@ -62,6 +62,9 @@ abstract public class LoginPage extends JPanel {
 	
 	JLabel cancel;
 	
+	String login;
+	String password;
+	
 	LoginPage(VaccinationPlatformGUI frame) {
 		
 		this.frame = frame;
@@ -288,7 +291,11 @@ class CitizenLogin extends LoginPage {
 	
 	@Override
 	void login() {
-		frame.userPage = new CitizenUserPage(frame);
+		//TODO ask for user with ssn from usernameField
+		String SSN = usernameField.getText();
+		String password = passwordField.getText();
+		
+		frame.userPage = new CitizenUser(frame, SSN);
 		frame.setContentPane(frame.userPage);
 		frame.userPage.setUp();
 		frame.userPage.reload();
@@ -311,7 +318,13 @@ class MedicalLogin extends LoginPage {
 
 	@Override
 	void login() {
-		frame.userPage = new MedicalUserPage(frame);
+		//TODO ask for user with employee id from usernameField
+		//and employer id from center fied
+		String employerID = centerField.getText();
+		String employeeID = usernameField.getText();
+		String password = passwordField.getText();
+		
+		frame.userPage = new MedicalUser(frame, employeeID, employerID);
 		frame.setContentPane(frame.userPage);
 		frame.userPage.setUp();
 		frame.userPage.reload();
@@ -329,7 +342,7 @@ class AdminLogin extends LoginPage {
 
 	@Override
 	void login() {
-		frame.userPage = new AdminUserPage(frame);
+		frame.userPage = new AdminUser(frame);
 		frame.setContentPane(frame.userPage);
 		frame.userPage.setUp();
 		frame.userPage.reload();

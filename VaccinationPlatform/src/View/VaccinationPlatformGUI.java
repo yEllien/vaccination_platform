@@ -82,7 +82,7 @@ public class VaccinationPlatformGUI extends JFrame {
 	MedicalLogin medicalLogin;
 	AdminLogin adminLogin;
 	
-	UserPage userPage;
+	User userPage;
 	
  	VaccinationPlatformGUI(){
  		

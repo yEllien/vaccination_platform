@@ -24,10 +24,10 @@ import View.GraphicsComponents.OptButton;
 import View.GraphicsComponents.OptionList;
 import View.GraphicsComponents.RoundedComponent;
 import View.GraphicsComponents.RoundedLayeredPanel;
-import View.UserPage.LeftPanel;
-import View.UserPage.MainPanel;
+import View.User.LeftPanel;
+import View.User.MainPanel;
 
-abstract class UserPage extends JPanel {
+abstract class User extends JPanel {
 	
 	VaccinationPlatformGUI frame;
 	
@@ -42,27 +42,25 @@ abstract class UserPage extends JPanel {
 	
 	int active;
 		
-	UserPage (VaccinationPlatformGUI frame) {
+	User (VaccinationPlatformGUI frame) {
 		
 		this.frame = frame;
 		
-		setBackground(Color.red);
-
-		leftPanel = new LeftPanel();
-		mainPanel = new MainPanel();
-		
-		
+		setBackground(Color.green);
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		
+		leftPanel = new LeftPanel();
+		mainPanel = new MainPanel();		
 		
 		add(leftPanel);
 		add(mainPanel);
 		
-		
 		frame.revalidate();
 	}
 	
-	void setAccountName (String accountName) {
-		this.leftPanel.accountName.setText(accountName);
+	void setAccountName (String accountFirstName, String accountLastName) {
+		this.leftPanel.accountFirstName.setText(accountFirstName);
+		this.leftPanel.accountLastName.setText(accountLastName);
 	}
 	
 	void setAccountIcon (String icon_name) {
@@ -97,7 +95,8 @@ abstract class UserPage extends JPanel {
 		JPanel accountInfo;
 		
 		JLabel accountIcon = new JLabel();
-		JLabel accountName = new JLabel();
+		JLabel accountFirstName = new JLabel();
+		JLabel accountLastName = new JLabel();
 		
 		JLabel logoutLabel;
 		WhiteButton logoutButton;
@@ -110,13 +109,13 @@ abstract class UserPage extends JPanel {
 		
 		LeftPanel () {
 						
-			this.setBounds(0,10, frame.getWidth()/4, frame.getHeight()-60);
+			this.setBounds(5,10, frame.getWidth()/4, frame.getHeight()-60);
 			this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 			this.setBackground(backgroundColor);
 
 			base = new RoundedLayeredPanel (
 					this, 
-					new Dimension(getBounds().width-20, getBounds().height),
+					new Dimension(getBounds().width-25, getBounds().height),
 					panelColor, true, 
 					panelColor, true
 					);
@@ -130,14 +129,14 @@ abstract class UserPage extends JPanel {
 			
 
 			JPanel accountInfoPanel = createAccountInfo();
-			
 			JPanel optionsPanel = createOptions();
-			
 			JPanel logoutPanel = createLogout();
 			
 			componentsPanel.add(Box.createGlue());
 			componentsPanel.add(accountInfoPanel);
+			componentsPanel.add(Box.createGlue());
 			componentsPanel.add(optionsPanel);
+			componentsPanel.add(Box.createGlue());
 			componentsPanel.add(logoutPanel);
 			componentsPanel.add(Box.createGlue());
 				
@@ -152,15 +151,30 @@ abstract class UserPage extends JPanel {
 			accountInfoPanel.setLayout(new BoxLayout(accountInfoPanel, BoxLayout.Y_AXIS));
 			accountInfoPanel.setBackground(panelColor);
 			
-			accountName.setPreferredSize(new Dimension (
+			accountFirstName.setPreferredSize(new Dimension (
 							componentsPanel.getSize().width,40));
-			accountName.setMinimumSize(accountName.getPreferredSize());
-			accountName.setMaximumSize(accountName.getPreferredSize());
-			accountName.setHorizontalAlignment(SwingConstants.CENTER);			
-			accountName.setForeground(panelFontColor);
-			accountName.setText("Username");
+			accountFirstName.setMaximumSize(accountFirstName.getPreferredSize());
+			/*
+			 */
+			accountFirstName.setHorizontalAlignment(SwingConstants.CENTER);			
+			accountFirstName.setForeground(panelFontColor);
+			accountFirstName.setText("First Name");
 			
-			accountInfoPanel.add(accountName);
+			accountLastName.setPreferredSize(new Dimension (
+					componentsPanel.getSize().width,40));
+			accountLastName.setMaximumSize(accountLastName.getPreferredSize());
+			accountLastName.setHorizontalAlignment(SwingConstants.CENTER);			
+			accountLastName.setForeground(panelFontColor);
+			accountLastName.setText("Last Name");
+			
+			accountInfoPanel.add(Box.createGlue());
+			accountInfoPanel.add(accountFirstName);
+			accountInfoPanel.add(accountLastName);
+			accountInfoPanel.add(Box.createGlue());
+			accountInfoPanel.setPreferredSize(new Dimension(
+					accountFirstName.getPreferredSize().width, 40
+					));
+			
 			accountInfoPanelWrapper.add(accountInfoPanel);
 			accountInfoPanel.revalidate();
 			
@@ -186,13 +200,12 @@ abstract class UserPage extends JPanel {
 		
 		void addOption (String optionName) {
 			
-			leftPanel.options.addOption(optionName);
-			int i = leftPanel.options.options.size()-1;
-			leftPanel.options.options.get(i).addActionListener(new ActionListener() {
+			options.addOption(optionName);
+			int i = options.options.size()-1;
+			options.options.get(i).addActionListener(new ActionListener() {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					System.out.println("Selecting "+i);
 					mainPanel.set(i);
 				}
 				
@@ -300,7 +313,6 @@ abstract class UserPage extends JPanel {
 			setPreferredSize(new Dimension(frame.getWidth()-leftPanel.getWidth(), frame.getHeight()));
 			setMinimumSize(getPreferredSize());
 			setMaximumSize(getPreferredSize());
-			//setBackground(backgroundColor);
 			setBackground(backgroundColor);
 			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 			
@@ -324,7 +336,6 @@ abstract class UserPage extends JPanel {
 			this.removeAll();
 			this.repaint();
 			this.add(content.get(i));
-			//leftPanel.options.selectOption(i);
 			active = i;
 		}
 		
@@ -362,12 +373,7 @@ abstract class UserPage extends JPanel {
 				
 				contentPanel = makeContent();
 
-				/*
-				 */
-				
-				
 				this.add(Box.createGlue());
-				//this.add(titleWrapper);
 				this.add(borderWrapper);
 				this.add(contentPanel);
 				this.add(Box.createGlue());
@@ -388,9 +394,7 @@ abstract class UserPage extends JPanel {
 				contentTitle.setBackground(Color.green);
 				contentTitle.setHorizontalAlignment(SwingConstants.CENTER);
 				
-				//titleWrapper.add(Box.createGlue());
 				titleWrapper.add(contentTitle);
-				//titleWrapper.add(Box.createGlue());
 				
 				return titleWrapper;
 			}

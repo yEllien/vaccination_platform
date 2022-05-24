@@ -1,17 +1,19 @@
 package View;
 
-public class AdminUserPage extends UserPage{
+public class AdminUser extends User{
 
 	DataPanel dataPanel;
 	
-	AdminUserPage(VaccinationPlatformGUI frame) {
+	AdminUser(VaccinationPlatformGUI frame) {
 		super(frame);
 	}
 	
 	void loadAccountInfo () {
 		//TODO get name
-		leftPanel.accountName.setText("Admin username");
-		dataPanel.loadData();
+		/*
+		setAccountName();
+		dataPanel.updateData();
+	*/
 	}
 	
 	void loadOptions() {
@@ -40,7 +42,6 @@ public class AdminUserPage extends UserPage{
 				},
 				panelColor, backgroundColor);
 		mainPanel.addToContentPanel(0, dataPanel);
-		dataPanel.init();
 	}
 
 	@Override

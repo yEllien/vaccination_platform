@@ -30,13 +30,13 @@ public class OptButton extends RoundedLayeredPanel {
 	
 	public OptButton(JPanel parent, Dimension d, Color fill, boolean filled, Color line, boolean lined) {
 
-		super(parent, new Dimension(d.width-10, d.height-20), fill, filled, line, lined);
+		super(parent, new Dimension(d.width-40, d.height-20), fill, filled, line, lined);
 		
 		this.parent = parent;
 		
-		this.setPreferredSize(d);
-		this.setMinimumSize(d);
-		this.setMaximumSize(d);
+		this.setPreferredSize(new Dimension(d.width-20, d.height));
+		this.setMinimumSize(this.getPreferredSize());
+		this.setMaximumSize(this.getPreferredSize());
 		
 		this.filled = filled;
 		this.fill = fill;

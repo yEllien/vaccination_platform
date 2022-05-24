@@ -131,13 +131,16 @@ class DataTable extends JScrollPane {
 	
 }
 
-public class MedicalUserPage extends UserPage {
+public class MedicalUser extends User {
 
 	DataPanel dataPanel;
 	
 	String lastSearch;
 	
-	MedicalUserPage(VaccinationPlatformGUI frame) {
+	MedicalUser(
+			VaccinationPlatformGUI frame, 
+			String employeeID, 
+			String employerID) {
 		super(frame);
 		//loadAccountInfo();
 		//loadOptions();
@@ -145,8 +148,10 @@ public class MedicalUserPage extends UserPage {
 	
 	void loadAccountInfo () {
 		//TODO get name
+		/*
 		leftPanel.accountName.setText("Employee name");
 		dataPanel.loadData();
+	*/
 	}
 
 	@Override
@@ -172,7 +177,6 @@ public class MedicalUserPage extends UserPage {
 				},
 				panelColor, backgroundColor);
 		mainPanel.addToContentPanel(0, dataPanel);
-		dataPanel.init();
 	}
 	
 	void createAppointmentsTab () {
