@@ -36,6 +36,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import Controller.Appointment;
+import Controller.MedicalCenter;
 import View.Calendar.TimeslotColumn;
 import View.Calendar.TimeslotEntry;
 import View.GraphicsComponents.CustomButton;
@@ -45,24 +46,6 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
-
-
-class MedicalCenter {
-	
-	String id;
-	String name;
-	String vaccine;
-	
-	MedicalCenter (String id, String name, String vaccine) {
-		this.id = id;
-		this.name = name;
-		this.vaccine = vaccine;
-	}
-	
-	public String toString () {
-		return name+", "+vaccine;
-	}
-}
 
 public class AppointmentEntry extends JPanel {
 	
@@ -598,9 +581,9 @@ public class AppointmentEntry extends JPanel {
 						
 						appointment = new Appointment(
 									appointment.getSSN(),
-									selectedCenter.id,
+									selectedCenter.getID(),
 									"Medical center", //TODO get medical center name from id
-									selectedCenter.vaccine,
+									selectedCenter.getVaccine(),
 									appointment.getDoseNumber(),
 									date,
 									time,
@@ -608,7 +591,7 @@ public class AppointmentEntry extends JPanel {
 								);
 						
 						selectedLabel.setText(
-									selectedCenter.name + ", "+
+									selectedCenter.getName() + ", "+
 									day+", "+
 									date+", "+
 									time

@@ -35,9 +35,9 @@ public class CitizenUser extends User{
 	}
 	
 	void setUp () {		
+		citizen.loadData();
 		createAccountTab();
 		createAppointmentTab();
-		//citizen.loadData();
 		updateAccountInfo();
 		updateAppointments();
 	}
