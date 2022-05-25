@@ -433,6 +433,21 @@ public class db {
 		return hospitalName;
     }
     
+    public String getMedicalStaffHospitalId(String employeeID) throws SQLException{
+    	String hospitalID = "";
+    	
+    	Statement stmt = con.createStatement();  
+    	ResultSet rs = stmt.executeQuery("select hospitalID "
+					    			+ "from MedicalStaff "
+					    			+ "where employeeID = " + employeeID);  
+    	
+    	while(rs.next()) {
+    		hospitalID = rs.getString("hospitalID");
+    	}
+    	
+		return hospitalID;
+    }
+    
     public ArrayList<String[]> GetDailyAppointments(String hospitalID, String date) throws SQLException{
     	
 		CallableStatement st = con.prepareCall("call ViewDailyAppointments(?,?);");
