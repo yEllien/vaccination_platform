@@ -1,6 +1,7 @@
 package Controller;
 
 import java.sql.*;
+import java.sql.Date;
 import java.util.*;
 
 import com.mysql.cj.xdevapi.Type;
@@ -44,16 +45,19 @@ public class db {
     }
     
     public String getCitizenBirthDate(String ssn) throws SQLException{
-    	String dateOfBirth = "";
+    	Date dateOfBirth;
+    	String date = "";
     	Statement stmt = con.createStatement();  
     	ResultSet rs = stmt.executeQuery("select dateOfBirth "
 					    			+ "from Citizen "
 					    			+ "where ssn = " + ssn);  
+    	while(rs.next()) {
+    		dateOfBirth = rs.getDate("dateOfBirth");
+    		date = dateOfBirth.toString();
+    	}
 
-		dateOfBirth = rs.getString("dateOfBirth");
-    	
     	rs.close();
-		return dateOfBirth;
+		return date;
     }
     
     public String getCitizenGender(String ssn) throws SQLException{
@@ -62,8 +66,9 @@ public class db {
     	ResultSet rs = stmt.executeQuery("select gender "
 					    			+ "from Citizen "
 					    			+ "where ssn = " + ssn);  
-
-		gender = rs.getString("gender");
+    	while(rs.next()) {
+    		gender = rs.getString("gender");
+    	}
     	
     	rs.close();
 		return gender;
@@ -258,7 +263,9 @@ public class db {
 		st.setString(1, ssn);
 		rs = st.executeQuery();
 		
+		//while(rs.next()) {
 		bookedAppointments =  ResultSetArray(rs);
+		//}
 		
 		rs.close();
 		st.close();
@@ -394,8 +401,9 @@ public class db {
      */
     
     public String[] getMedicalStaffName(String employeeID) throws SQLException{
-    	String name[] = null;
-    	Statement stmt = con.createStatement();  
+    	String name[] = {"", ""};
+    	Statement stmt = con.createStatement(); 
+    	
     	ResultSet rs = stmt.executeQuery("select firstName, lastName "
 					    			+ "from MedicalStaff "
 					    			+ "where employeeID = " + employeeID);  
@@ -406,6 +414,7 @@ public class db {
     		System.out.println(name[0] + " " + name[1]); 
     	}
     	
+    	rs.close();
 		return name;
     }
     
@@ -496,9 +505,9 @@ public class db {
     	Statement st = con.createStatement();  
     	String hospitalID = "";
     	
-    	ResultSet rs = st.executeQuery("select hospitalID "
+    	ResultSet rs = st.executeQuery(" select hospitalID "
 					    			+ "from Hospital "
-					    			+ "where name = " + hospitalName );  
+					    			+ "where name = " + "\"" + hospitalName + "\"");  
 
 		while(rs.next()) {
 			hospitalID = rs.getString("hospitalID");
@@ -524,20 +533,40 @@ public class db {
     	Statement st = con.createStatement();  
     	ArrayList<String> hospitals = new ArrayList<String>();
     	
-    	String pc = postalCode.substring(0, 2); 
+    	String pc = postalCode.substring(0, 1); 
     	ResultSet rs = st.executeQuery("select name "
 					    			+ "from Hospital "
-					    			+ "where postalCode LIKE " + "\'%" + pc + "%\'");  
+					    			//+ "where postalCode LIKE " + "\'%" + pc + "%\'"
+					    			+ "where (select substring(postalCode, 1, 1) like "
+					    			//+ "\'" + pc + "\'"
+					    			+ " (select substring(" + "\'" + postalCode +"\'" + ", 1, 1)))"
+    								);  
 
 		while(rs.next()) {
 			hospitals.add(rs.getString("name"));
 		}
+		
+		rs.close();
+    	return hospitals;
+    }
+    
+    public String getHospitalVaccine(String hospitalID) throws SQLException {     	
+		CallableStatement st = con.prepareCall("call GetHospitalVaccine(?);");
+		ArrayList<String[]> appointments = new ArrayList<String[]>();
+		String vaccineName = "";
 
-		for(int i=0; i<hospitals.size() ; i++) {
-			System.out.println(hospitals.get(i).toString() + " ");
+		ResultSet rs;
+		st.setString(1, hospitalID);
+		rs = st.executeQuery();
+		
+		while(rs.next()) {
+			vaccineName = rs.getString("name");
 		}
 		
-    	return hospitals;
+		rs.close();
+		st.close();
+		
+		return vaccineName;
     }
     
     /*
@@ -569,7 +598,7 @@ public class db {
 		return list;
 	}
 	
-	private static void PrintArrayList(ArrayList<String[]> ar) {
+	public static void PrintArrayList(ArrayList<String[]> ar) {
 	      for (int i = 0; i < ar.size();i++){ 		      
 	    	  String[] row = ar.get(i);
 	    	  for (int j = 0; j < row.length; j++){ 		      
@@ -578,8 +607,8 @@ public class db {
 	      }   	
 	}
 	
-/*    
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+    
+/*    public static void main(String[] args) throws SQLException, ClassNotFoundException {
     	db database = new db();
     	database.init();
     	
@@ -594,12 +623,23 @@ public class db {
     	//ArrayList<String[]> ar = database.getDateAndTimeSlotsAvailability("20309", "2022/05/16");
     			//database.GetDailyAppointments("20309", "2022/05/19");
     	//PrintArrayList(ar);
-    	database.getNearbyHospitals("21810");
+    	
+    	ArrayList<String> a = database.getNearbyHospitals("21810");
+    	System.out.println("Nearby Hospitals: " + a.size());
+    	for(int i=0 ; i<a.size() ; i++) {
+    		String hospitalName = a.get(i);
+    		System.out.println(hospitalName);
+    		String hospitalID = database.getHospitalID(hospitalName);
+    		System.out.println(hospitalID);
+    		String vaccineName = database.getHospitalVaccine(hospitalID);
+    		System.out.println(vaccineName);
+    		
+    	}
     	//database.bookAppointment(2, ssn, "20309", "2022/05/26", "08:00-12:00", "Pfizer");
     	//database.ConfirmVaccination(ssn, 2);
     	//database.CancelAppointment(ssn, 1);
-    	if(database.IssueCertificate(ssn) == true) System.out.println("Issue vaccination certificate");
-    	else System.out.println("Can not issue vaccination certificate");
+//    	if(database.IssueCertificate(ssn) == true) System.out.println("Issue vaccination certificate");
+//    	else System.out.println("Can not issue vaccination certificate");
     	
     	//database.PrintArrayList(database.GetVaccinationInfo(ssn));
     	//database.AddCommunicationInfo("09118460019", "jakelester@email.com", "6909118460", null);
@@ -611,7 +651,8 @@ public class db {
     	database.con.close();
     	
     	}
-    
     }  
-    */
+
+*/   
+    
 }
