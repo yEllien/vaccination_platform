@@ -1,5 +1,6 @@
 package Controller;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class Citizen {
@@ -18,14 +19,17 @@ public class Citizen {
 	
 	Appointment[] appointments;
 	
-	public Citizen (String SSN) {
+	public Citizen (String SSN) throws SQLException {
 		this.SSN = SSN;
 		loadData();
 	}
 	
-	public void loadData () {
+	public void loadData () throws SQLException {
 		//TODO request personal info from database
 		//e.g.
+    	db database = new db();
+    	database.init();
+    	/*
 		String [] info = new String [] {
 				"Dwight",
 				"Schrute",
@@ -47,9 +51,25 @@ public class Citizen {
 		email		= info[6];
 		postalCode	= info[7];
 		toArray();
+		*/
+    	
+    	String[] info = database.getCitizenName(this.SSN);
+		firstName 	= info[0];
+		lastName 	= info[1];
+
+		birthDate	= database.getCitizenBirthDate(SSN);
+		gender		= database.getCitizenGender(SSN);
+		
+		info = database.getCitizenCommunicationInfo(SSN);
+		email		= info[0];
+		postalCode	= info[2];
+		toArray();
 		
 		//TODO request appointment info from database
 		////////////////////////////////////////////////////////
+		// db returns: ssn, dose number, appointment date, appointment time, hospital name
+		
+		/*
 		ArrayList<String[]> apps = new ArrayList<String[]> ();
 		String[] app = new String[] {
 				"12345678901", 	//SSN
@@ -71,9 +91,13 @@ public class Citizen {
 				"0"
 		};
 		apps.add(app);
+		*/
 		////////////////////////////////////////////////////////
 		
-		appointments = new Appointment[2]; 
+		ArrayList<String[]> apps = database.GetBookedAppointments(SSN);
+		
+		appointments = new Appointment[apps.size()];
+		
 		for (String[] a : apps) {
 			appointments[Integer.parseInt(a[3])-1] = new Appointment(
 						a[0],
@@ -85,7 +109,9 @@ public class Citizen {
 						a[6],
 						Integer.parseInt(a[7])
 					);
-		}		
+		}
+		
+		database.con.close();
 	}
 	
 	public String getSSN () {

@@ -1,5 +1,7 @@
 package Controller;
 
+import java.sql.SQLException;
+
 public class MedicalStaff {
 	
 	String medicalCenterID;
@@ -23,9 +25,10 @@ public class MedicalStaff {
 		array = new String[] {medicalCenterID, employeeID, null, null};
 	}
 	
-	public void loadData () {
+	public void loadData () throws SQLException {
 		//TODO request info form database
 		//e.g.
+		/*
 		System.out.println("test");
 		String [] info = new String [] {
 				"12",
@@ -38,10 +41,22 @@ public class MedicalStaff {
 		employeeID 		= info[1];
 		firstName 		= info[2];
 		lastName		= info[3];
+		*/
+		
+    	db database = new db();
+    	database.init();
+    	
+		String name[] = database.getMedicalStaffName(employeeID);
+		this.firstName = name[0];
+		this.lastName = name[1];
+		this.medicalCenterID = database.getMedicalStaffHospitalId(employeeID);
+		String hospitalName = database.getMedicalStaffHospital(employeeID);
 		
 		toArray();
 		
 		//TODO request info about medical center? name?
+		
+		database.con.close();
 	}
 	
 	public String getEmployeeID () {
