@@ -27,6 +27,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -266,8 +267,8 @@ public class AppointmentEntry extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//TODO request appoointment cancellation from Database
-				
+				//TODO request appointment cancellation from Database
+			
 				content.remove(dataPanel);
 				content.remove(statusPanel);
 				content.add(confirmationPanel);
@@ -336,18 +337,37 @@ public class AppointmentEntry extends JPanel {
 				boolean cancellationSuccess = true;
 
 				clear();
-				if (cancellationSuccess) {
-					int doseno = appointment.getDoseNumber();
-					appointment = new Appointment(
+				//if (cancellationSuccess) {
+					
+					
+					try {
+						int doseno = appointment.getDoseNumber();
+						appointment = new Appointment(
 								appointment.getSSN(),
 								doseno);
-					makeAppointment();
-					revalidate();
-					repaint();
-				}
-				else {
-					addAppointmentComps();
-				}
+						
+						db database = new db();
+						database.init();
+						
+						database.CancelAppointment(citizen.citizen.getSSN(), doseno);
+						
+						database.con.close();
+						
+						makeAppointment();
+						revalidate();
+						repaint();
+						
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						JOptionPane.showMessageDialog(new JFrame(), e1.toString(), "Error", JOptionPane.WARNING_MESSAGE);
+						addAppointmentComps();
+					}
+					
+				//}
+			//	else {
+					
+			//	}
 				
 			}
 			
@@ -627,6 +647,22 @@ public class AppointmentEntry extends JPanel {
 								String date,
 								String time
 						*/
+						
+						String vaccinationState = "";
+						int status = -1;
+						
+						try {
+							db database = new db();
+							database.init();
+							vaccinationState = database.getVaccinationState(citizen.citizen.getSSN());
+							database.con.close();
+						} catch (SQLException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						
+						//if(vaccinationState == "not vaccinated") status = 
+						
 						
 						appointment = new Appointment(
 									appointment.getSSN(),

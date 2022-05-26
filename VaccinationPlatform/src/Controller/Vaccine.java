@@ -9,7 +9,7 @@ public class Vaccine {
 	Vaccine (String name, String manufacturer, int doses) {
 		this.name = name;
 		this.manufacturer = manufacturer;
-		this.dosesRequired = dosesRequired;
+		this.dosesRequired = doses;
 	}
 	
 	public static Vaccine[] vaccines = new Vaccine[] {
@@ -24,5 +24,29 @@ public class Vaccine {
 			new Vaccine("Moderna", "Moderna Biotech", 2),
 			new Vaccine("Pfizer", "Pfizer - BioNTech", 1)
 			};
+	
+	public static int getVaccineDoses (String id) {
+		
+		switch (id) {
+		
+		case "Novaxovid":
+		case "Novavax":
+			return vaccines[0].dosesRequired;
+		case "Spikevax":
+		case "Moderna":
+			return vaccines[1].dosesRequired;
+		case "Cormirnaty":
+		case "Pfizer":
+			return vaccines[2].dosesRequired;
+		case "AD26.COV2.S":
+		case "Johnson & Johnson":
+			return vaccines[3].dosesRequired;
+		case "Vaxzevria":
+		case "AstraZeneca":
+			return vaccines[4].dosesRequired;
+		default:
+			return -1;
+		}
+	}
 	
 }

@@ -14,6 +14,7 @@ public class Citizen {
 	String phoneNumber;
 	String email;
 	String postalCode;
+	String vaccinationState;
 	
 	String[] array;
 	
@@ -41,6 +42,8 @@ public class Citizen {
 		phoneNumber = info[1];
 		postalCode	= info[2];
 		System.out.println("Postl code of " + firstName + " " + lastName + " is " + postalCode);
+		
+		vaccinationState = database.getVaccinationState(SSN);
 		toArray();
 		
 		ArrayList<String[]> apps = database.GetBookedAppointments(SSN);
