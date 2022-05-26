@@ -268,8 +268,43 @@ public class MedicalUser extends User {
 						break;
 					case "Date":
 						//lookup database by date
-						//Object[][] results;
-						//table.loadArray(results);
+						
+						System.out.println("Searching for appointment with SSN: " + target);
+						String date = target;
+					
+						try {
+							db database = new db();
+							database.init();
+							
+							ArrayList<String[]> appointmentsByDate = database.GetDailyAppointments(medicalStaff.getMedicalCenterID(), date);
+
+							if(appointmentsByDate.size()>0)
+							db.PrintArrayList(appointmentsByDate);
+							
+							appointment = new Object[appointmentsByDate.size()-1][6];
+							for(int i=1 ; i<appointmentsByDate.size() ; i++) {
+								String [] appt = appointmentsByDate.get(i);
+								
+								appointment[i-1][0] = appt[0];
+								appointment[i-1][1] = appt[3];
+								appointment[i-1][2] = appt[1] + " " + appt[2];
+								appointment[i-1][3] = appt[4];
+								appointment[i-1][4] = appt[5];
+								appointment[i-1][5] = false;
+								
+							}
+							
+							table.loadArray(appointment);
+							table.updateViewportSize();
+							table.revalidate();
+							table.repaint();
+							
+							database.con.close();
+						} catch (SQLException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						
 						break;
 					}
 				}
