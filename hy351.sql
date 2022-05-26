@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Εξυπηρετητής: 127.0.0.1
--- Χρόνος δημιουργίας: 26 Μάη 2022 στις 20:09:18
+-- Χρόνος δημιουργίας: 26 Μάη 2022 στις 20:58:22
 -- Έκδοση διακομιστή: 10.4.22-MariaDB
 -- Έκδοση PHP: 8.1.0
 
@@ -64,8 +64,14 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `CancelAppointment` (IN `ssn` VARCHA
 
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetAppointmentStatus` (IN `ssn` VARCHAR(11), IN `doseNumber` INT)  BEGIN
+	SELECT Confirmed
+    FROM appointment a
+    WHERE a.citizenSSN = ssn AND a.doseNumber = doseNumber;
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetBookedAppointments` (IN `ssn` VARCHAR(11))  BEGIN	
-    SELECT DISTINCT a.citizenSSN, b.hospitalID, v.name, a.doseNumber, h.name, a.appointmentDate, a.appointmentTime
+    SELECT DISTINCT a.citizenSSN, b.hospitalID, v.name, a.doseNumber, h.name, a.appointmentDate, a.appointmentTime, a.Confirmed
     FROM books b, appointment a, hospital h, hospital_vaccine hv, vaccine v
     WHERE b.citizenSSN = ssn and a.citizenSSN = b.citizenSSN and h.hospitalID = b.hospitalID and v.vaccineID = hv.vaccineID and hv.hospitalID = b.hospitalID and hv.hospitalID = h.hospitalID;
 END$$
