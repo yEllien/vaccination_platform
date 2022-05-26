@@ -110,7 +110,7 @@ class DataTable extends JScrollPane {
 			        			database.init();
 								
 			        			database.ConfirmVaccination(model.getValueAt(row, 0).toString(), Integer.parseInt((String) model.getValueAt(row, 1)));
-			        			
+			        		System.out.println("Log vaccination SSN:" + model.getValueAt(row, 0) );
 			        			database.con.close();
 							} catch (SQLException e1) {
 								// TODO Auto-generated catch block
