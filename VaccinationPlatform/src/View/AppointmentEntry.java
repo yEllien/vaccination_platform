@@ -338,11 +338,9 @@ public class AppointmentEntry extends JPanel {
 
 				clear();
 				//if (cancellationSuccess) {
-					
-					
 					try {
 						int doseno = appointment.getDoseNumber();
-						appointment = new Appointment(
+						Appointment tmp = new Appointment(
 								appointment.getSSN(),
 								doseno);
 						
@@ -353,6 +351,8 @@ public class AppointmentEntry extends JPanel {
 						
 						database.con.close();
 						
+						appointment = tmp;
+						
 						makeAppointment();
 						revalidate();
 						repaint();
@@ -361,7 +361,9 @@ public class AppointmentEntry extends JPanel {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 						JOptionPane.showMessageDialog(new JFrame(), e1.toString(), "Error", JOptionPane.WARNING_MESSAGE);
-						addAppointmentComps();
+						makeAppointment();
+						revalidate();
+						repaint();
 					}
 					
 				//}
