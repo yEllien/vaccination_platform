@@ -136,6 +136,7 @@ public class CitizenUser extends User{
 							new ActionListener() {
 								@Override
 								public void actionPerformed(ActionEvent e) {
+									System.out.println("Reloading appointments");
 									reloadAppointments();
 								}	
 							}

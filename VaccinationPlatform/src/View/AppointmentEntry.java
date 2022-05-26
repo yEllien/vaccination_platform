@@ -635,6 +635,7 @@ public class AppointmentEntry extends JPanel {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						
+						System.out.println("Clicked");
 						MedicalCenter selectedCenter = (MedicalCenter) medicalCenters.getSelectedItem();
 						String day = calendar.dayPanel[column.id].day.getText();
 						String date = calendar.dayPanel[column.id].date.getText();

@@ -3,6 +3,7 @@ package View;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
@@ -123,6 +124,15 @@ public class Calendar extends JPanel{
 	void addActionListener(ActionListener l) {
 		for (TimeslotColumn column : timeslotColumn) {
 			column.addActionListener(l);
+			column.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					// TODO Auto-generated method stub
+					System.out.println("TEST");
+				}
+				
+			});
 		}
 	}
 	
