@@ -138,7 +138,7 @@ public class AppointmentEntry extends JPanel {
 		
 		JLabel dose = new JLabel();
 		dose.setText("Dose " + Integer.toString(this.appointment.getDoseNumber()));
-		//System.out.println("Dose number " + appointment.getDoseNumber());
+		
 		dose.setForeground(backgroundColor);
 		dose.setHorizontalAlignment(JLabel.CENTER);
 		dose.setFont(new Font(getFont().getFontName(), Font.BOLD, getFont().getSize()));
@@ -660,8 +660,6 @@ public class AppointmentEntry extends JPanel {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
-						
-						//if(vaccinationState == "not vaccinated") status = 
 						
 						
 						appointment = new Appointment(
