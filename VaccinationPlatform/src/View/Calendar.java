@@ -237,7 +237,8 @@ public class Calendar extends JPanel{
 					new DayPanel("Wednesday", dates[2]),
 					new DayPanel("Thursday", dates[3]),
 					new DayPanel("Friday", dates[4]),
-					new DayPanel("Saturday", dates[5])
+					new DayPanel("Saturday", dates[5]),
+					new DayPanel("Sunday", dates[6])
 			};
 			
 			/*
@@ -382,7 +383,7 @@ public class Calendar extends JPanel{
 					
 					if (timeslot == null)
 					{
-						timeslotEntry[i] = new TimeslotEntry(new Timeslot("-", "-", 0));
+						timeslotEntry[i] = new TimeslotEntry(new Timeslot("   -   ", "   -   ", 0));
 					}
 					else {
 						timeslotEntry[i] = new TimeslotEntry(timeslot);

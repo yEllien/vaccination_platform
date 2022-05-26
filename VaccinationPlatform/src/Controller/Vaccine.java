@@ -16,7 +16,7 @@ public class Vaccine {
 			new Vaccine ("Novaxovid", "Novavax", 2),
 			new Vaccine ("Spikevax", "Moderna", 2),
 			new Vaccine ("Cormirnaty", "Pfizer", 2),
-			new Vaccine ("AD26.COV2.S", "Johnson & Johnson", 1),
+			new Vaccine ("AD26.COV2.S", "Johnson", 1),
 			new Vaccine ("Vaxzevria", "AstraZeneca", 2),
 		
 			//from db
@@ -39,7 +39,7 @@ public class Vaccine {
 		case "Pfizer":
 			return vaccines[2].dosesRequired;
 		case "AD26.COV2.S":
-		case "Johnson & Johnson":
+		case "Johnson":
 			return vaccines[3].dosesRequired;
 		case "Vaxzevria":
 		case "AstraZeneca":

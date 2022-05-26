@@ -634,10 +634,8 @@ public class AppointmentEntry extends JPanel {
 		}
 		
 		for (final TimeslotColumn column : calendar.timeslotColumn) {
-			if (column.timeslotEntry == null) { 
-				System.out.println("Column is null"); continue;}
+			if (column.timeslotEntry == null) { continue;}
 			for (final TimeslotEntry entry : column.timeslotEntry) {
-				System.out.println("===========Adding action listener");
 				entry.addNewActionListener(new ActionListener () {
 					
 					@Override

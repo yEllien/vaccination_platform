@@ -54,8 +54,6 @@ public class Citizen {
 	     for (int i = 1; i < apps.size();i++){ 		      
 	    	  String[] a = apps.get(i);
 	    	  
-		    	 System.out.println(a);
-	    	  
 	    	 appointments[Integer.parseInt(a[3])-1]= new Appointment(
 						a[0],	//ssn
 						a[1],	//medical center id
@@ -64,7 +62,7 @@ public class Citizen {
 						Integer.parseInt(a[3]),	//dose number
 						a[5],	//appointment date
 						a[6],	//appointment time
-						0
+						Integer.parseInt(a[7])
 					); 
 	      } 
 
