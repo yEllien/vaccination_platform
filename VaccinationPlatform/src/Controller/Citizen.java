@@ -41,16 +41,15 @@ public class Citizen {
 		email		= info[0];
 		phoneNumber = info[1];
 		postalCode	= info[2];
-		System.out.println("Postl code of " + firstName + " " + lastName + " is " + postalCode);
 		
 		vaccinationState = database.getVaccinationState(SSN);
 		toArray();
 		
 		ArrayList<String[]> apps = database.GetBookedAppointments(SSN);
 		if (apps == null) System.out.println("apps is null");
+		if (apps.size() != 0) { 
 		appointments = new Appointment[apps.size()-1];
 				
-		System.out.println("Got appointments "+apps.size());
 	     for (int i = 1; i < apps.size();i++){ 		      
 	    	  String[] a = apps.get(i);
 	    	  
@@ -67,11 +66,13 @@ public class Citizen {
 	    	 
 	    	 Appointment tmp = appointments[Integer.parseInt(a[3])-1];
 	    	 
-	    	 System.out.println( "ADDED "+
-	    			 tmp.doseNumber
-	    			 );
 	      } 
 
+		}
+		else 
+		{
+			appointments = new Appointment[0];
+		}
 		database.con.close();
 	}
 	

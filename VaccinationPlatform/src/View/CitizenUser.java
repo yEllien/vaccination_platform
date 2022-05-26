@@ -40,7 +40,6 @@ public class CitizenUser extends User{
 	void setUp () {		
 		try {
 			citizen.loadData();
-			System.out.println("         "+citizen.getAppointments().length);
 			createAccountTab();
 			createAppointmentTab();
 			updateAccountInfo();
@@ -90,7 +89,6 @@ public class CitizenUser extends User{
 		
 		boolean complete = true;
 		
-		System.out.println("CitizenUser: updateAppointments()");
 		
 		if (citizen.getAppointments().length == 0) {
 			appointmentTabContent.add(
@@ -111,14 +109,11 @@ public class CitizenUser extends User{
 		}
 		
 		String vaccineName = citizen.getAppointments()[0].getVaccineName();
-		System.out.println("Doses required "+Vaccine.getVaccineDoses(vaccineName));
-		System.out.println("Booked : "+citizen.getAppointments().length);
 		
 		Appointment appointment;
 		//for (int i=0; i<citizen.getAppointments().length-1; i++) {
 		for (int i=0; i<Vaccine.getVaccineDoses(vaccineName); i++) {
 			if (i>=citizen.getAppointments().length) {
-				System.out.println("Dose "+i+" : is empty");
 				appointment = new Appointment(
 							citizen.getSSN(),
 							i+1
@@ -126,11 +121,8 @@ public class CitizenUser extends User{
 			}
 			else {
 				appointment = citizen.getAppointments()[i];
-				System.out.println("Dose "+i+" : Not empty");
 			}
 			//09118460019
-			System.out.println("Dose "+i+" : "+appointment);
-			System.out.println("CitizenUser: has appointments "+appointment);
 			appointmentTabContent.add(
 					new AppointmentEntry(
 							this,
@@ -141,7 +133,6 @@ public class CitizenUser extends User{
 							new ActionListener() {
 								@Override
 								public void actionPerformed(ActionEvent e) {
-									System.out.println("Reloading appointments");
 									reloadAppointments();
 								}	
 							}
@@ -149,17 +140,14 @@ public class CitizenUser extends User{
 			if(appointment.getStatus()!=1)
 				complete = false;
 		}
-		System.out.println("Unconfirmed appointments : "+!complete);
 		
 		int appointmentCount = citizen.getAppointments().length;
-		System.out.println("Has "+appointmentCount+" appointments");
 		if (appointmentCount >= 1) {
 			String vname = citizen.getAppointments()[0].getVaccineName();
 			if (Vaccine.getVaccineDoses(vname) > appointmentCount)
 				complete = false;
 		}
 		else complete = false;
-		System.out.println("Complete : "+complete);
 		
 		if (complete) {
 			CustomButton getButton = new CustomButton(
@@ -205,7 +193,6 @@ public class CitizenUser extends User{
 			appointmentTabContent.removeAll();
 			updateAccountInfo();
 			updateAppointments();
-			System.out.println("CitizenUser: reload()");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -213,14 +200,10 @@ public class CitizenUser extends User{
 	}
 
 	public void reloadAppointments() {
-		System.out.println("reloading appointments");
 		try {
 			citizen.loadData();
-			System.out.println("loaded data");
 			appointmentTabContent.removeAll();
-			System.out.println("removed all");
 			updateAppointments();
-			System.out.println("updated appointments");
 			revalidate();
 			repaint();
 		} catch (SQLException e) {
