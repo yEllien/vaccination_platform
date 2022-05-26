@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Εξυπηρετητής: 127.0.0.1
--- Χρόνος δημιουργίας: 26 Μάη 2022 στις 13:49:53
+-- Χρόνος δημιουργίας: 26 Μάη 2022 στις 18:09:26
 -- Έκδοση διακομιστή: 10.4.22-MariaDB
 -- Έκδοση PHP: 8.1.0
 
@@ -26,8 +26,8 @@ DELIMITER $$
 -- Διαδικασίες
 --
 CREATE DEFINER=`root`@`localhost` PROCEDURE `AddAppointment` (IN `citizenSSN` VARCHAR(11), IN `doseNumber` INT, IN `appointmentDate` DATE, IN `appointmentTime` ENUM('08:00-12:00','12:00-16:00','16:00-20:00'), IN `vaccineName` VARCHAR(20))  BEGIN
-	INSERT INTO `appointment`(`citizenSSN`, `doseNumber`, `appointmentDate`, `appointmentTime`, `vaccineName`) 
-	VALUES (citizenSSN, doseNumber, appointmentDate, appointmentTime, vaccineName);
+	INSERT INTO `appointment`(`citizenSSN`, `doseNumber`, `appointmentDate`, `appointmentTime`, `vaccineName`, `Confirmed`) 
+	VALUES (citizenSSN, doseNumber, appointmentDate, appointmentTime, vaccineName, 'false');
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `AddCommunicationInfo` (IN `ssn` VARCHAR(11), IN `email` VARCHAR(100), IN `phoneNumber` VARCHAR(10), IN `postalCode` VARCHAR(5))  BEGIN
@@ -131,6 +131,12 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `ModifyTimeSlot` (IN `ssn` VARCHAR(1
     WHERE appointment.citizenSSN = ssn AND appointment.doseNumber = dose;
     
     CALL UpdateCapacity(hospitalID, oldDate, newTimeSlot);
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateAppointment` (IN `citizenSSN` VARCHAR(11), IN `doseNumber` INT)  BEGIN
+	UPDATE appointment a
+    SET Confirmed = 'true'
+    WHERE a.citizenSSN = citizenSSN and a.doseNumber = doseNumber;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateCapacity` (IN `hospitalID` VARCHAR(5), IN `day` DATE, IN `timeSlot` ENUM('08:00-12:00','12:00-16:00','16:00-20:00'))  BEGIN 
@@ -252,23 +258,24 @@ CREATE TABLE `appointment` (
   `doseNumber` int(11) NOT NULL,
   `appointmentDate` date DEFAULT NULL,
   `appointmentTime` enum('08:00-12:00','12:00-16:00','16:00-20:00') DEFAULT NULL,
-  `vaccineName` varchar(20) DEFAULT NULL
+  `vaccineName` varchar(20) DEFAULT NULL,
+  `Confirmed` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Άδειασμα δεδομένων του πίνακα `appointment`
 --
 
-INSERT INTO `appointment` (`citizenSSN`, `doseNumber`, `appointmentDate`, `appointmentTime`, `vaccineName`) VALUES
-('03027412995', 1, '2022-05-19', '08:00-12:00', 'Pfizer'),
-('06067500198', 1, '2022-05-19', '12:00-16:00', 'Pfizer'),
-('07049610092', 1, '2022-05-19', '08:00-12:00', 'Pfizer'),
-('09108078512', 1, '2022-05-19', '08:00-12:00', 'Pfizer'),
-('09118460019', 1, '2022-05-19', '16:00-20:00', 'Pfizer'),
-('11017426134', 1, '2022-05-19', '12:00-16:00', 'Pfizer'),
-('11018701926', 1, '2022-05-25', '16:00-20:00', 'Pfizer'),
-('11018701926', 2, '2022-05-26', '08:00-12:00', 'Pfizer'),
-('12345678900', 1, '2022-05-14', '08:00-12:00', 'Pfizer');
+INSERT INTO `appointment` (`citizenSSN`, `doseNumber`, `appointmentDate`, `appointmentTime`, `vaccineName`, `Confirmed`) VALUES
+('03027412995', 1, '2022-05-19', '08:00-12:00', 'Pfizer', 0),
+('06067500198', 1, '2022-05-19', '12:00-16:00', 'Pfizer', 0),
+('07049610092', 1, '2022-05-19', '08:00-12:00', 'Pfizer', 0),
+('09108078512', 1, '2022-05-19', '08:00-12:00', 'Pfizer', 0),
+('09118460019', 1, '2022-05-19', '16:00-20:00', 'Pfizer', 0),
+('11017426134', 1, '2022-05-19', '12:00-16:00', 'Pfizer', 0),
+('11018701926', 1, '2022-05-25', '16:00-20:00', 'Pfizer', 0),
+('11018701926', 2, '2022-05-26', '08:00-12:00', 'Pfizer', 0),
+('12345678900', 1, '2022-05-14', '08:00-12:00', 'Pfizer', 0);
 
 -- --------------------------------------------------------
 
@@ -295,6 +302,7 @@ INSERT INTO `books` (`doseNumber`, `citizenSSN`, `hospitalID`) VALUES
 (1, '11017426134', '20309'),
 (1, '11018701926', '20309'),
 (1, '12345678900', '20309'),
+(1, '25036650948', '20309'),
 (2, '11018701926', '20309');
 
 -- --------------------------------------------------------
@@ -320,14 +328,14 @@ CREATE TABLE `citizen` (
 INSERT INTO `citizen` (`firstName`, `lastName`, `SSN`, `gender`, `dateOfBirth`, `vaccinationState`, `dosesCompleted`) VALUES
 ('Angelo', 'Morris', '02010000992', 'male', '2000-01-02', 'not vaccinated', 0),
 ('Mareli', 'Bender', '02024511750', 'male', '1945-02-02', 'not vaccinated', 0),
-('Leonardo', 'Ferrell', '03027412995', 'male', '1974-02-03', 'not vaccinated', 0),
+('Leonardo', 'Ferrell', '03027412995', 'male', '1974-02-03', 'partially vaccinated', 1),
 ('Cherish', 'Mejia', '06067500198', 'male', '1975-06-06', 'not vaccinated', 0),
 ('Niko', 'Curry', '07049610092', 'male', '1996-04-07', 'not vaccinated', 0),
 ('Ricky', 'Salinas', '09108078512', 'male', '1980-10-09', 'not vaccinated', 0),
 ('Jake', 'Lester', '09118460019', 'male', '1984-11-09', 'not vaccinated', 0),
 ('Abdiel', 'Moreno', '11017426134', 'male', '1974-01-11', 'not vaccinated', 0),
 ('Chace', 'Downs', '11018009871', 'male', '1980-01-11', 'not vaccinated', 0),
-('Kenna', 'Manning', '11018701926', 'female', '1987-01-11', 'fully vaccinated', 2),
+('Kenna', 'Manning', '11018701926', 'female', '1987-01-11', 'partially vaccinated', 1),
 ('Leland', 'Chapman', '12109200956', 'female', '1992-10-12', 'not vaccinated', 0),
 ('Ricky', 'Salinas', '13117690374', 'male', '1976-11-13', 'not vaccinated', 0),
 ('Aubrey', 'Proctor', '15059775840', 'female', '1997-05-15', 'not vaccinated', 0),
