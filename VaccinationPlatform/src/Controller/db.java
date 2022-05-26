@@ -281,7 +281,7 @@ public class db {
     public boolean IssueCertificate(String ssn) throws SQLException {
     	String state = getVaccinationState(ssn);
     	
-    	if(state == "fully vaccinated"){
+    	if(state.equals("fully vaccinated")){
 
     		String certificateID = generateCertificateID(ssn);
         	
@@ -292,11 +292,12 @@ public class db {
         	proc.setString(1, certificateID);
         	proc.setString(2, ssn);
         	proc.registerOutParameter(3, Types.BOOLEAN);
-        	rs = proc.executeQuery();
+        	proc.executeQuery();
         	
-        	boolean valid = rs.getBoolean(3);
         	
-        	rs.close();
+        	boolean valid = false;
+        	valid = proc.getBoolean(3);
+
         	proc.close();
         	
     		return valid;
