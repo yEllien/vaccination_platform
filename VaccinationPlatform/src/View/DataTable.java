@@ -30,10 +30,11 @@ class DataTable extends JScrollPane {
 	int maxHeight = 450;
 	int minWidth = 650;
 	
-	int CONFIRM = 4;
+	int CONFIRM = 5;
 	
 	String[] titles = new String [] {
 			"SSN",
+			"Dose Number",
 			"Name",
 			"Date",
 			"Time",
@@ -41,6 +42,7 @@ class DataTable extends JScrollPane {
 	};
 	
 	Class[] dataClasses = new Class[] {
+			String.class,
 			String.class,
 			String.class,
 			String.class,
@@ -93,7 +95,7 @@ class DataTable extends JScrollPane {
 			        String columnName = model.getColumnName	(column);
 			        Boolean checked = (Boolean) model.getValueAt(row, column);
 			        if (checked) {
-			        	String message = "Log vaccination for citizen with SSN:" + model.getValueAt(row, 0)+"?";
+			        	String message = "Log vaccination for citizen with SSN:" + model.getValueAt(row, 0) + "?";
 			        	int n = JOptionPane.showConfirmDialog(
 			        			table, 
 			        			message, 
@@ -107,6 +109,7 @@ class DataTable extends JScrollPane {
 			        			db database = new db();
 			        			database.init();
 								
+			        			database.ConfirmVaccination(model.getValueAt(row, 0).toString(), Integer.parseInt((String) model.getValueAt(row, 1)));
 			        			
 			        			database.con.close();
 							} catch (SQLException e1) {
@@ -144,13 +147,18 @@ class DataTable extends JScrollPane {
 	}
 	
 	void loadArray(Object[][] data) {
+		System.out.println("ROW COUNT BEFORE ADDING ANY DATA" + model.getRowCount());
+		int size = model.getRowCount();
 		
-		for (int i=0; i<model.getRowCount(); i++) {
-			model.removeRow(i);
+		for (int i=0; i<size; i++) {
+			model.removeRow(0);
+			System.out.println("REMOVING ROW " + i);
 		}
 		
 		for (Object[] row : data) {
-			addRow(row);
+			model.addRow(row);
+			System.out.println("ADDING ROW " + row);
+			System.out.println("ROW COUNT" + model.getRowCount());
 		}
 	}
 	

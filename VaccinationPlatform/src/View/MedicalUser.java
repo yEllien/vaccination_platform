@@ -221,12 +221,50 @@ public class MedicalUser extends User {
 					cancel.setVisible(true);
 					go.setVisible(false);
 					lastSearch = target;
+					Object[][] appointment = null;
 					
 					switch(s) {
 					case "SSN":
+						System.out.println("Searching for appointment with SSN: " + target);
+						String ssn = target;
 						//lookup database by ssn
-						//Object[][] results;
-						//table.loadArray(results);
+						
+						try {
+							db database = new db();
+							database.init();
+							
+							ArrayList<String[]> appointmentsBySSN = database.GetAppointmentsBySSN(medicalStaff.getMedicalCenterID(), ssn);
+
+							if(appointmentsBySSN.size()>0)
+							db.PrintArrayList(appointmentsBySSN);
+							
+							appointment = new Object[appointmentsBySSN.size()-1][6];
+							for(int i=1 ; i<appointmentsBySSN.size() ; i++) {
+								String [] appt = appointmentsBySSN.get(i);
+								
+								appointment[i-1][0] = appt[0];
+								appointment[i-1][1] = appt[3];
+								appointment[i-1][2] = appt[1] + " " + appt[2];
+								appointment[i-1][3] = appt[4];
+								appointment[i-1][4] = appt[5];
+								appointment[i-1][5] = false;
+								
+								//Object[] appointment = {appt[0], appt[3], appt[1] + " " + appt[2], appt[4], appt[5], false};
+								//table.addRow(appointment);
+								
+							}
+							
+							table.loadArray(appointment);
+							table.updateViewportSize();
+							table.revalidate();
+							table.repaint();
+							
+							database.con.close();
+						} catch (SQLException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						
 						break;
 					case "Date":
 						//lookup database by date
@@ -278,17 +316,30 @@ public class MedicalUser extends User {
 				db database = new db();
 				database.init();
 				
-				ArrayList<String[]> dailyAppointments = database.GetDailyAppointments(medicalStaff.getMedicalCenterID(), "2022/05/25");
+				ArrayList<String[]> dailyAppointments = database.GetDailyAppointments(medicalStaff.getMedicalCenterID(), "2022/05/19");
 				System.out.println("Appointments for " + medicalStaff.getMedicalCenterID() + "(" + dailyAppointments.size() + ")");
 				
 				if(dailyAppointments.size()>0)
 				db.PrintArrayList(dailyAppointments);
 				
+				Object[][] appointment = new Object[dailyAppointments.size()-1][6];
+				
 				for(int i=1 ; i<dailyAppointments.size() ; i++) {
-					final String [] appt = dailyAppointments.get(i);
-					Object[] appointment = {appt[0], appt[1] + " " + appt[2], appt[3], appt[4], appt[5], false};
-					table.addRow(appointment);
+						String [] appt = dailyAppointments.get(i);
+						
+						appointment[i-1][0] = appt[0];
+						appointment[i-1][1] = appt[3];
+						appointment[i-1][2] = appt[1] + " " + appt[2];
+						appointment[i-1][3] = appt[4];
+						appointment[i-1][4] = appt[5];
+						appointment[i-1][5] = false;
+						
 				}
+					table.loadArray(appointment);
+					table.updateViewportSize();
+					table.revalidate();
+					table.repaint();
+				
 				database.con.close();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
