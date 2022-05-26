@@ -469,6 +469,28 @@ public class db {
     }
     
     /*
+     * Returns status of Appointment; 
+     * Not Confirmed = false
+     * Confirmed = true
+     */
+    
+    public boolean getAppointmentStatus(String ssn, int doseNumber) throws SQLException{
+    	boolean status = false;
+    	Statement stmt = con.createStatement();  
+    	ResultSet rs = stmt.executeQuery("select Confirmed "
+					    			+ "from appointment a "
+					    			+ "where a.citizenSSN = " + ssn
+					    			+ " and a.doseNumber = " + doseNumber);  
+    	while(rs.next()) {
+    		status = rs.getBoolean("Confirmed");
+    	}
+
+    	rs.close();
+		return status;
+    }
+    
+    
+    /*
      * Updates a Citizen's email address
      */
     
