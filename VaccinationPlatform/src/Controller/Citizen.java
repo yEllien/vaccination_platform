@@ -48,7 +48,7 @@ public class Citizen {
 		
 		ArrayList<String[]> apps = database.GetBookedAppointments(SSN);
 		if (apps == null) System.out.println("apps is null");
-		appointments = new Appointment[apps.size()];
+		appointments = new Appointment[apps.size()-1];
 				
 		System.out.println("Got appointments "+apps.size());
 	     for (int i = 1; i < apps.size();i++){ 		      
@@ -68,7 +68,7 @@ public class Citizen {
 	    	 Appointment tmp = appointments[Integer.parseInt(a[3])-1];
 	    	 
 	    	 System.out.println( "ADDED "+
-	    			 tmp
+	    			 tmp.doseNumber
 	    			 );
 	      } 
 

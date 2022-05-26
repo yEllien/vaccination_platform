@@ -560,6 +560,7 @@ public class AppointmentEntry extends JPanel {
 				new MedicalCenter("12", "Medical Center of Chania", "Moderna"),
 				new MedicalCenter("21", "Princeton Plainsboro Hospital", "Pfizer")
 		};
+		
 */		System.out.println("Load Medical Centers");
 		db database = new db();
 		database.init();
@@ -568,9 +569,10 @@ public class AppointmentEntry extends JPanel {
 		
 		ArrayList<String> hospitals = database.getNearbyHospitals(postalCode);
 		System.out.println("Found " + hospitals.size());
-		if(hospitals.size() > 0) this.medicalCenterPairs = new MedicalCenter[hospitals.size()];
-	    for (int i = 0; i < hospitals.size(); i++){ 		      
-	    	  String medicalCenterName = hospitals.get(i);
+		if(hospitals.size() > 0) this.medicalCenterPairs = new MedicalCenter[hospitals.size()+1];
+		this.medicalCenterPairs[0] = new MedicalCenter("-1", "-- Select medical center", " vaccine");
+	    for (int i = 1; i < hospitals.size(); i++){ 		      
+	    	  String medicalCenterName = hospitals.get(i-1);
 	    	  String medicalCenterId = database.getHospitalID(medicalCenterName);
 	    	  String vaccine = database.getHospitalVaccine(medicalCenterId);
 	    	  
@@ -887,7 +889,7 @@ public class AppointmentEntry extends JPanel {
 		//dataPanel.add(Box.createGlue());
 		
 		//nedical center
-		JLabel medicalCenter = new JLabel(appointment.getMedicalCenterID());
+		JLabel medicalCenter = new JLabel(appointment.getMedicalCenterName());
 		medicalCenter.setBackground(backgroundColor);
 		medicalCenter.setHorizontalAlignment(SwingConstants.CENTER);
 		//tw = rmw/3;

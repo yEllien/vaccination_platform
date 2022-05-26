@@ -110,20 +110,25 @@ public class CitizenUser extends User{
 		}
 		
 		String vaccineName = citizen.getAppointments()[0].getVaccineName();
+		System.out.println("Doses required "+Vaccine.getVaccineDoses(vaccineName));
+		System.out.println("Booked : "+citizen.getAppointments().length);
 		
+		Appointment appointment;
 		//for (int i=0; i<citizen.getAppointments().length-1; i++) {
 		for (int i=0; i<Vaccine.getVaccineDoses(vaccineName); i++) {
-			Appointment appointment;
 			if (i>=citizen.getAppointments().length) {
+				System.out.println("Dose "+i+" : is empty");
 				appointment = new Appointment(
 							citizen.getSSN(),
-							i
+							i+1
 						);
 			}
 			else {
 				appointment = citizen.getAppointments()[i];
+				System.out.println("Dose "+i+" : Not empty");
 			}
-			
+			//09118460019
+			System.out.println("Dose "+i+" : "+appointment);
 			System.out.println("CitizenUser: has appointments "+appointment);
 			appointmentTabContent.add(
 					new AppointmentEntry(
