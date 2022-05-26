@@ -251,7 +251,7 @@ public class Calendar extends JPanel{
 					new DayPanel("Sunday", "28-02-2022")
 			};
 			*/
-			
+						
 			//Create timeslot Columns
 			timeslotColumn = new TimeslotColumn[] {
 					new TimeslotColumn(0, timeslotCols[0]),
@@ -262,6 +262,12 @@ public class Calendar extends JPanel{
 					new TimeslotColumn(5, timeslotCols[5]),
 					new TimeslotColumn(6, timeslotCols[6])
 			};
+			
+			for (TimeslotColumn tsc : timeslotColumn) {
+				if (tsc == null) {
+					System.out.println("~~~NULL COL");
+				}
+			}
 			/*
 			timeslotColumn = new TimeslotColumn[] {
 					new TimeslotColumn(0),
@@ -350,13 +356,14 @@ public class Calendar extends JPanel{
 		}
 		
 		public void addNewActionListener (ActionListener l) {
+			System.out.println("ADDED");
 			addActionListener(l);
 		}
 	}
 	
 	class TimeslotColumn extends JPanel {
 		
-		TimeslotEntry[] timeslots; 
+		TimeslotEntry[] timeslotEntry = new TimeslotEntry[3]; 
 		int id;
 		
 		TimeslotColumn (int id, Timeslot[] timeslots) {
@@ -369,19 +376,20 @@ public class Calendar extends JPanel{
 		void loadData (Timeslot[] timeslots) {
 			//removeAll();
 			
-				
 			this.add(Box.createGlue());
+			int i=0;
 			for (Timeslot timeslot : timeslots) {
 					
 					if (timeslot == null)
 					{
-						
+						timeslotEntry[i] = new TimeslotEntry(new Timeslot("-", "-", 0));
 					}
 					else {
-						this.add(new TimeslotEntry (timeslot));
-						this.add(Box.createGlue());
-						
+						timeslotEntry[i] = new TimeslotEntry(timeslot);
 					}
+					this.add(timeslotEntry[i]);						
+					this.add(Box.createGlue());
+					i++;
 			}
 				
 			/*
@@ -397,7 +405,7 @@ public class Calendar extends JPanel{
 		}
 		
 		void addActionListener (ActionListener l) {
-			for (TimeslotEntry entry : timeslots) {
+			for (TimeslotEntry entry : timeslotEntry) {
 				entry.addActionListener(l);
 			}
 		}

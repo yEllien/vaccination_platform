@@ -627,10 +627,18 @@ public class AppointmentEntry extends JPanel {
 		});
 		//confirmAppointmentButton.addActionListener(reloadAppointments);
 		
+		for (TimeslotColumn tsc : calendar.timeslotColumn) {
+			if (tsc == null) {
+				System.out.println("~~~NULL COL");
+			}
+		}
+		
 		for (final TimeslotColumn column : calendar.timeslotColumn) {
-			if (column.timeslots == null) {continue;}
-			for (final TimeslotEntry entry : column.timeslots) {
-				entry.addActionListener(new ActionListener () {
+			if (column.timeslotEntry == null) { 
+				System.out.println("Column is null"); continue;}
+			for (final TimeslotEntry entry : column.timeslotEntry) {
+				System.out.println("===========Adding action listener");
+				entry.addNewActionListener(new ActionListener () {
 					
 					@Override
 					public void actionPerformed(ActionEvent e) {
