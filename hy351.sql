@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Εξυπηρετητής: 127.0.0.1
--- Χρόνος δημιουργίας: 26 Μάη 2022 στις 18:09:26
+-- Χρόνος δημιουργίας: 26 Μάη 2022 στις 20:09:18
 -- Έκδοση διακομιστή: 10.4.22-MariaDB
 -- Έκδοση PHP: 8.1.0
 
@@ -133,10 +133,10 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `ModifyTimeSlot` (IN `ssn` VARCHAR(1
     CALL UpdateCapacity(hospitalID, oldDate, newTimeSlot);
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateAppointment` (IN `citizenSSN` VARCHAR(11), IN `doseNumber` INT)  BEGIN
-	UPDATE appointment a
-    SET Confirmed = 'true'
-    WHERE a.citizenSSN = citizenSSN and a.doseNumber = doseNumber;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateAppointment` (IN `ssn` VARCHAR(11), IN `dose` INT)  BEGIN 
+	UPDATE appointment
+    SET Confirmed = true
+    WHERE appointment.citizenSSN = ssn AND appointment.doseNumber = dose;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateCapacity` (IN `hospitalID` VARCHAR(5), IN `day` DATE, IN `timeSlot` ENUM('08:00-12:00','12:00-16:00','16:00-20:00'))  BEGIN 
@@ -274,8 +274,10 @@ INSERT INTO `appointment` (`citizenSSN`, `doseNumber`, `appointmentDate`, `appoi
 ('09118460019', 1, '2022-05-19', '16:00-20:00', 'Pfizer', 0),
 ('11017426134', 1, '2022-05-19', '12:00-16:00', 'Pfizer', 0),
 ('11018701926', 1, '2022-05-25', '16:00-20:00', 'Pfizer', 0),
-('11018701926', 2, '2022-05-26', '08:00-12:00', 'Pfizer', 0),
-('12345678900', 1, '2022-05-14', '08:00-12:00', 'Pfizer', 0);
+('11018701926', 2, '2022-05-26', '08:00-12:00', 'Pfizer', 1),
+('12345678900', 1, '2022-05-14', '08:00-12:00', 'Pfizer', 0),
+('18079318729', 1, '2022-05-28', '12:00-16:00', 'Pfizer', 0),
+('25036650948', 1, '2022-05-26', '12:00-16:00', 'Pfizer', 1);
 
 -- --------------------------------------------------------
 
@@ -302,6 +304,7 @@ INSERT INTO `books` (`doseNumber`, `citizenSSN`, `hospitalID`) VALUES
 (1, '11017426134', '20309'),
 (1, '11018701926', '20309'),
 (1, '12345678900', '20309'),
+(1, '18079318729', '20309'),
 (1, '25036650948', '20309'),
 (2, '11018701926', '20309');
 
@@ -335,14 +338,14 @@ INSERT INTO `citizen` (`firstName`, `lastName`, `SSN`, `gender`, `dateOfBirth`, 
 ('Jake', 'Lester', '09118460019', 'male', '1984-11-09', 'not vaccinated', 0),
 ('Abdiel', 'Moreno', '11017426134', 'male', '1974-01-11', 'not vaccinated', 0),
 ('Chace', 'Downs', '11018009871', 'male', '1980-01-11', 'not vaccinated', 0),
-('Kenna', 'Manning', '11018701926', 'female', '1987-01-11', 'partially vaccinated', 1),
+('Kenna', 'Manning', '11018701926', 'female', '1987-01-11', 'fully vaccinated', 2),
 ('Leland', 'Chapman', '12109200956', 'female', '1992-10-12', 'not vaccinated', 0),
 ('Ricky', 'Salinas', '13117690374', 'male', '1976-11-13', 'not vaccinated', 0),
 ('Aubrey', 'Proctor', '15059775840', 'female', '1997-05-15', 'not vaccinated', 0),
 ('Dean', 'Arellano', '16096536000', 'male', '1965-09-16', 'not vaccinated', 0),
 ('Fernanda', 'Ali', '18079318729', 'female', '1993-07-18', 'not vaccinated', 0),
 ('Brycen', 'Valentine', '18090119872', 'male', '2001-09-18', 'not vaccinated', 0),
-('Mckinley', 'Bush', '25036650948', 'male', '1966-03-25', 'not vaccinated', 0),
+('Mckinley', 'Bush', '25036650948', 'male', '1966-03-25', 'partially vaccinated', 1),
 ('Jessica', 'Deleon', '26055743567', 'female', '1957-05-26', 'not vaccinated', 0),
 ('Kyle', 'Dalton', '26116473859', 'male', '1964-11-26', 'not vaccinated', 0),
 ('Jayden', 'Ortiz', '27108645329', 'female', '1986-10-27', 'not vaccinated', 0),
@@ -452,13 +455,13 @@ INSERT INTO `hospital_time_slots` (`hospitalID`, `day`, `timeSlot`, `capacity`) 
 ('20309', '2022-05-25', '12:00-16:00', 6),
 ('20309', '2022-05-25', '16:00-20:00', 5),
 ('20309', '2022-05-26', '08:00-12:00', 5),
-('20309', '2022-05-26', '12:00-16:00', 6),
+('20309', '2022-05-26', '12:00-16:00', 5),
 ('20309', '2022-05-26', '16:00-20:00', 6),
 ('20309', '2022-05-27', '08:00-12:00', 6),
 ('20309', '2022-05-27', '12:00-16:00', 6),
 ('20309', '2022-05-27', '16:00-20:00', 6),
 ('20309', '2022-05-28', '08:00-12:00', 6),
-('20309', '2022-05-28', '12:00-16:00', 6),
+('20309', '2022-05-28', '12:00-16:00', 5),
 ('20309', '2022-05-28', '16:00-20:00', 6),
 ('20309', '2022-05-29', '08:00-12:00', 6),
 ('20309', '2022-05-29', '12:00-16:00', 6),
