@@ -383,7 +383,7 @@ public class Calendar extends JPanel{
 					
 					if (timeslot == null)
 					{
-						timeslotEntry[i] = new TimeslotEntry(new Timeslot("   -   ", "   -   ", 0));
+						timeslotEntry[i] = new TimeslotEntry(new Timeslot("        -         ", "        -        ", 0));
 					}
 					else {
 						timeslotEntry[i] = new TimeslotEntry(timeslot);

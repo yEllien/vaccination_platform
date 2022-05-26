@@ -24,7 +24,8 @@ class DataTable extends JScrollPane {
 	Color backgroundColor;
 	Color panelColor;
 	
-	DefaultTableModel model;
+	//DefaultTableModel model;
+	CustomModel model;
 	JTable table;
 	
 	int maxHeight = 450;
@@ -54,13 +55,23 @@ class DataTable extends JScrollPane {
 		
 		this.backgroundColor = backgroundColor;
 		this.panelColor = panelColor;
-		
+		/*
 		model = new DefaultTableModel() {
+			
+			void CustomAddRow(Object[] row) {
+				addRow(row);
+				int i = getRowCount();
+				int c = getColumnCount();
+				int j = row.length-1;
+				setValueAt(row[j], i, c);
+			}
+			
 			public Class getColumnClass (int columnIndex) {
 				return dataClasses[columnIndex];
 			}
 		};
-		
+		*/
+		model = new CustomModel();
 		model.setColumnIdentifiers(titles);
 		
 		table = new JTable(model);
@@ -142,7 +153,7 @@ class DataTable extends JScrollPane {
 	}
 	
 	void addRow (Object[] data) {
-		model.addRow(data);
+		model.CustomAddRow(data);
 		updateViewportSize();
 	}
 	
@@ -156,8 +167,27 @@ class DataTable extends JScrollPane {
 		}
 		
 		for (Object[] row : data) {
-			model.addRow(row);
+			model.CustomAddRow(row);
 		}
 	}
+	
+	class CustomModel extends DefaultTableModel {
+		
+		void CustomAddRow(Object[] row) {
+			addRow(row);
+			int i = getRowCount()-1;
+			int c = getColumnCount()-1;
+			int j = row.length-1;
+			System.out.println("SETTING TO "+row[j]);
+			setValueAt(
+					row[j], 
+					i, 
+					c);
+		}
+		
+		public Class getColumnClass (int columnIndex) {
+			return dataClasses[columnIndex];
+		}
+	};
 	
 }

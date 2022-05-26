@@ -92,7 +92,6 @@ public class CitizenUser extends User{
 		System.out.println("CitizenUser: updateAppointments()");
 		
 		if (citizen.getAppointments().length == 0) {
-			System.out.println("--------Making empty appointment");
 			appointmentTabContent.add(
 					new AppointmentEntry(
 						this,
@@ -113,9 +112,7 @@ public class CitizenUser extends User{
 		String vaccineName = citizen.getAppointments()[0].getVaccineName();
 		
 		//for (int i=0; i<citizen.getAppointments().length-1; i++) {
-		System.out.println("-------Doses:"+Vaccine.getVaccineDoses(vaccineName));
 		for (int i=0; i<Vaccine.getVaccineDoses(vaccineName); i++) {
-			System.out.println("--------------------Making appointment");
 			Appointment appointment;
 			if (i>=citizen.getAppointments().length) {
 				appointment = new Appointment(
@@ -124,7 +121,6 @@ public class CitizenUser extends User{
 						);
 			}
 			else {
-				System.out.println("---------------Getting appointment");
 				appointment = citizen.getAppointments()[i];
 			}
 			

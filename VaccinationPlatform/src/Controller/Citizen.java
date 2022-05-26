@@ -64,6 +64,12 @@ public class Citizen {
 						a[6],	//appointment time
 						Integer.parseInt(a[7])
 					); 
+	    	 
+	    	 Appointment tmp = appointments[Integer.parseInt(a[3])-1];
+	    	 
+	    	 System.out.println( "ADDED "+
+	    			 tmp
+	    			 );
 	      } 
 
 		database.con.close();
