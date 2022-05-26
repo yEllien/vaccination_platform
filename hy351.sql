@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Εξυπηρετητής: 127.0.0.1
--- Χρόνος δημιουργίας: 21 Μάη 2022 στις 14:48:30
+-- Χρόνος δημιουργίας: 26 Μάη 2022 στις 13:49:53
 -- Έκδοση διακομιστή: 10.4.22-MariaDB
 -- Έκδοση PHP: 8.1.0
 
@@ -42,6 +42,7 @@ END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `CancelAppointment` (IN `ssn` VARCHAR(11), IN `dose` INT)  BEGIN
 	DECLARE daysDifference INT;
+    DECLARE specialty CONDITION FOR SQLSTATE '45000';
     
     SELECT DATEDIFF(a.appointmentDate, CURRENT_DATE)
     INTO daysDifference
@@ -56,8 +57,23 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `CancelAppointment` (IN `ssn` VARCHA
         WHERE citizenSSN = ssn AND doseNumber = dose;
     	DELETE FROM books 
 		WHERE citizenSSN = ssn AND doseNumber = dose;
+    ELSE
+        SIGNAL SQLSTATE '45000' 
+        	SET MESSAGE_TEXT = 'Cannot cancel appointment';
     END IF;
 
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetBookedAppointments` (IN `ssn` VARCHAR(11))  BEGIN	
+    SELECT DISTINCT a.citizenSSN, b.hospitalID, v.name, a.doseNumber, h.name, a.appointmentDate, a.appointmentTime
+    FROM books b, appointment a, hospital h, hospital_vaccine hv, vaccine v
+    WHERE b.citizenSSN = ssn and a.citizenSSN = b.citizenSSN and h.hospitalID = b.hospitalID and v.vaccineID = hv.vaccineID and hv.hospitalID = b.hospitalID and hv.hospitalID = h.hospitalID;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetHospitalVaccine` (IN `hospitalID` VARCHAR(5))  BEGIN 
+	SELECT v.name
+    FROM hospital_vaccine h, vaccine v
+    WHERE h.hospitalID = hospitalID and v.vaccineID = h.vaccineID;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `IncrementCapacity` (IN `ssn` VARCHAR(11), IN `doseNum` INT)  BEGIN
