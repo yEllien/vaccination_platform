@@ -281,7 +281,7 @@ public class db {
     public boolean IssueCertificate(String ssn) throws SQLException {
     	String state = getVaccinationState(ssn);
     	
-    	if(state == "fully vaccinated"){
+    	if(state.equals("fully vaccinated")){
 
     		String certificateID = generateCertificateID(ssn);
         	
@@ -292,11 +292,12 @@ public class db {
         	proc.setString(1, certificateID);
         	proc.setString(2, ssn);
         	proc.registerOutParameter(3, Types.BOOLEAN);
-        	rs = proc.executeQuery();
+        	proc.executeQuery();
         	
-        	boolean valid = rs.getBoolean(3);
         	
-        	rs.close();
+        	boolean valid = false;
+        	valid = proc.getBoolean(3);
+
         	proc.close();
         	
     		return valid;
@@ -467,6 +468,28 @@ public class db {
 		
 		return vaccinationInfo;  
     }
+    
+    /*
+     * Returns status of Appointment; 
+     * Not Confirmed = false
+     * Confirmed = true
+     */
+    
+    public boolean getAppointmentStatus(String ssn, int doseNumber) throws SQLException{
+    	boolean status = false;
+    	Statement stmt = con.createStatement();  
+    	ResultSet rs = stmt.executeQuery("select Confirmed "
+					    			+ "from appointment a "
+					    			+ "where a.citizenSSN = " + ssn
+					    			+ " and a.doseNumber = " + doseNumber);  
+    	while(rs.next()) {
+    		status = rs.getBoolean("Confirmed");
+    	}
+
+    	rs.close();
+		return status;
+    }
+    
     
     /*
      * Updates a Citizen's email address

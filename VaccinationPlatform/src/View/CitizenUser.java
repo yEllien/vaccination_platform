@@ -21,6 +21,7 @@ import javax.swing.border.EmptyBorder;
 import Controller.Appointment;
 import Controller.Citizen;
 import Controller.Vaccine;
+import Controller.db;
 import View.GraphicsComponents.CustomButton;
 import View.GraphicsComponents.RoundedPanel;
 
@@ -177,6 +178,18 @@ public class CitizenUser extends User{
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					// TODO generate certificate
+			
+					try {
+						db database = new db();
+						database.init();
+						
+						database.IssueCertificate(citizen.getSSN());
+						
+						database.con.close();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
 			});
 			

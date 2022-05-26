@@ -636,8 +636,10 @@ public class AppointmentEntry extends JPanel {
 		}
 		
 		for (final TimeslotColumn column : calendar.timeslotColumn) {
-			if (column.timeslotEntry == null) { continue;}
+			if (column.timeslotEntry == null) { 
+				System.out.println("Column is null"); continue;}
 			for (final TimeslotEntry entry : column.timeslotEntry) {
+				System.out.println("===========Adding action listener");
 				entry.addNewActionListener(new ActionListener () {
 					
 					@Override
@@ -659,6 +661,7 @@ public class AppointmentEntry extends JPanel {
 						*/
 						
 						String vaccinationState = "";
+						
 						int status = -1;
 						
 						try {
@@ -676,7 +679,7 @@ public class AppointmentEntry extends JPanel {
 						
 						if(vaccinationState == "fully vaccinated") {
 							status = 1;
-						} System.out.println("       STATUS: " + status);
+						}
 							
 						
 						appointment = new Appointment(
