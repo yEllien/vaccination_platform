@@ -290,7 +290,7 @@ public class MedicalUser extends User {
 								appointment[i-1][2] = appt[1] + " " + appt[2];
 								appointment[i-1][3] = appt[4];
 								appointment[i-1][4] = appt[5];
-								appointment[i-1][5] = false;
+								appointment[i-1][5] = appt[7];
 								
 							}
 							
@@ -367,7 +367,7 @@ public class MedicalUser extends User {
 						appointment[i-1][2] = appt[1] + " " + appt[2];
 						appointment[i-1][3] = appt[4];
 						appointment[i-1][4] = appt[5];
-						appointment[i-1][5] = appt[7];
+						appointment[i-1][5] = Boolean.parseBoolean(appt[7]);
 						
 				}
 					table.loadArray(appointment);

@@ -105,6 +105,9 @@ class DataTable extends JScrollPane {
 			        TableModel model = (TableModel) e.getSource();
 			        String columnName = model.getColumnName	(column);
 			        Boolean checked = (Boolean) model.getValueAt(row, column);
+			        //int tmp = (Integer) model.getValueAt(row, column);
+			        //Boolean checked = tmp==0?false:true;
+			        
 			        if (checked) {
 			        	String message = "Log vaccination for citizen with SSN:" + model.getValueAt(row, 0) + "?";
 			        	int n = JOptionPane.showConfirmDialog(
@@ -161,12 +164,14 @@ class DataTable extends JScrollPane {
 		System.out.println("ROW COUNT BEFORE ADDING ANY DATA" + model.getRowCount());
 		int size = model.getRowCount();
 		
+		
 		for (int i=0; i<size; i++) {
 			model.removeRow(0);
 			System.out.println("REMOVING ROW " + i);
 		}
 		
 		for (Object[] row : data) {
+			//System.out.println("Adding : "+row[row.length -1].getClass());
 			model.CustomAddRow(row);
 		}
 	}
@@ -175,14 +180,16 @@ class DataTable extends JScrollPane {
 		
 		void CustomAddRow(Object[] row) {
 			addRow(row);
-			int i = getRowCount()-1;
-			int c = getColumnCount()-1;
-			int j = row.length-1;
-			System.out.println("SETTING TO "+row[j]);
+			//int i = getRowCount()-1;
+			//int c = getColumnCount()-1;
+			//int j = row.length-1;
+			//System.out.println("SETTING TO "+row[j]);
+			/*
 			setValueAt(
-					row[j], 
+					(Boolean) row[j], 
 					i, 
 					c);
+					*/
 		}
 		
 		public Class getColumnClass (int columnIndex) {
