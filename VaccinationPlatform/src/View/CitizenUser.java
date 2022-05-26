@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -29,17 +30,23 @@ public class CitizenUser extends User{
 	JPanel appointmentTabContent;
 	DataPanel dataPanel;	
 	
-	CitizenUser(VaccinationPlatformGUI frame, String SSN) {
+	CitizenUser(VaccinationPlatformGUI frame, String SSN) throws SQLException {
 		super(frame);
 		citizen = new Citizen(SSN);
 	}
 	
 	void setUp () {		
-		citizen.loadData();
-		createAccountTab();
-		createAppointmentTab();
-		updateAccountInfo();
-		updateAppointments();
+		try {
+			citizen.loadData();
+			createAccountTab();
+			createAppointmentTab();
+			updateAccountInfo();
+			updateAppointments();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	void createAccountTab () {
@@ -50,11 +57,11 @@ public class CitizenUser extends User{
 					"First name",
 					"Last name",
 					"SSN",
-					"TIN",
+					//"TIN",
 					"Date of birth", 
 					"gender",
-					"e-mail",
-					"Phone number"
+					"Phone number",
+					"e-mail"
 				},
 				panelColor, backgroundColor);
 		mainPanel.addToContentPanel(0, dataPanel);
@@ -80,7 +87,9 @@ public class CitizenUser extends User{
 		
 		boolean complete = true;
 		
+		System.out.println("CitizenUser: updateAppointments()");
 		for (Appointment appointment : citizen.getAppointments()) {
+			System.out.println("CitizenUser: adding appointments");
 			appointmentTabContent.add(
 					new AppointmentEntry(
 							this,
@@ -128,22 +137,34 @@ public class CitizenUser extends User{
 	
 	
 	public void reload () {
-		citizen.loadData();
-		appointmentTabContent.removeAll();
-		updateAccountInfo();
-		updateAppointments();
+		try {
+			citizen.loadData();
+			appointmentTabContent.removeAll();
+			updateAccountInfo();
+			updateAppointments();
+			System.out.println("CitizenUser: reload()");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void reloadAppointments() {
 		System.out.println("reloading appointments");
-		citizen.loadData();
-		System.out.println("loaded data");
-		appointmentTabContent.removeAll();
-		System.out.println("removed all");
-		updateAppointments();
-		System.out.println("updated appointments");
-		revalidate();
-		repaint();
+		try {
+			citizen.loadData();
+			System.out.println("loaded data");
+			appointmentTabContent.removeAll();
+			System.out.println("removed all");
+			updateAppointments();
+			System.out.println("updated appointments");
+			revalidate();
+			repaint();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 }

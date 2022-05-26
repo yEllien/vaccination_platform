@@ -2,6 +2,7 @@ package View;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.sql.SQLException;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -14,6 +15,8 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
+
+import Controller.db;
 
 public 
 class DataTable extends JScrollPane {
@@ -90,7 +93,7 @@ class DataTable extends JScrollPane {
 			        String columnName = model.getColumnName	(column);
 			        Boolean checked = (Boolean) model.getValueAt(row, column);
 			        if (checked) {
-			        	String message = "Log vaccination for citizen with SSN:"+model.getValueAt(row, 0)+"?";
+			        	String message = "Log vaccination for citizen with SSN:" + model.getValueAt(row, 0)+"?";
 			        	int n = JOptionPane.showConfirmDialog(
 			        			table, 
 			        			message, 
@@ -99,6 +102,17 @@ class DataTable extends JScrollPane {
 			        	
 			        	if (n == JOptionPane.YES_OPTION) {
 			        		//TODO log citizen as vaccinated
+			        		
+			        		try {
+			        			db database = new db();
+			        			database.init();
+								
+			        			
+			        			database.con.close();
+							} catch (SQLException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
 			        	}
 			        	else {
 			        		model.setValueAt(false, row, column);			        		

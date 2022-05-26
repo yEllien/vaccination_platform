@@ -17,7 +17,12 @@ public class Vaccine {
 			new Vaccine ("Spikevax", "Moderna", 2),
 			new Vaccine ("Cormirnaty", "Pfizer", 2),
 			new Vaccine ("AD26.COV2.S", "Johnson & Johnson", 1),
-			new Vaccine ("Vaxzevria", "AstraZeneca", 2)
-		};
+			new Vaccine ("Vaxzevria", "AstraZeneca", 2),
+		
+			//from db
+			new Vaccine("Johnson", "Johnson & Johnson", 1),
+			new Vaccine("Moderna", "Moderna Biotech", 2),
+			new Vaccine("Pfizer", "Pfizer - BioNTech", 1)
+			};
 	
 }

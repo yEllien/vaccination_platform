@@ -201,7 +201,7 @@ abstract class User extends JPanel {
 		void addOption (String optionName) {
 			
 			options.addOption(optionName);
-			int i = options.options.size()-1;
+			final int i = options.options.size()-1;
 			options.options.get(i).addActionListener(new ActionListener() {
 
 				@Override
@@ -223,7 +223,7 @@ abstract class User extends JPanel {
 			logoutPanel.setMaximumSize(logoutPanel.getPreferredSize());
 			logoutPanel.setBackground(panelColor);
 			
-			JPanel logoutConfirmPanel = new JPanel();
+			final JPanel logoutConfirmPanel = new JPanel();
 			logoutConfirmPanel.setLayout(new BoxLayout(logoutConfirmPanel, BoxLayout.X_AXIS));
 			logoutConfirmPanel.setPreferredSize(new Dimension (
 					getWidth(), 50));
@@ -234,7 +234,7 @@ abstract class User extends JPanel {
 			JPanel logoutWrapper = new JPanel();
 			logoutWrapper.setBackground(panelColor);
 			
-			JPanel logoutButtonWrapper = new JPanel();
+			final JPanel logoutButtonWrapper = new JPanel();
 			logoutButtonWrapper.setPreferredSize(new Dimension (
 					getWidth(), 50));
 			logoutButtonWrapper.setLayout(new BoxLayout(logoutButtonWrapper, BoxLayout.X_AXIS));

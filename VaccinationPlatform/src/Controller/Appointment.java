@@ -1,25 +1,28 @@
 package Controller;
 
+import java.sql.Date;
+
 public class Appointment {
 	
-	String SSN;
-	String medicalCenterID;
-	String medicalCenterName;
-	String vaccineName;
-	int doseNumber;
-	String date;
-	String time;
-	int status;
+	public String SSN;
+	public String medicalCenterID;
+	public String medicalCenterName;
+	public String vaccineName;
+	public int doseNumber;
+	public String date;
+	public String time;
+	public int status;
 	
 	public Appointment(
-			String SSN, 
-			String medicalCenterID, 
+			String SSN,
+			String medicalCenterID,
 			String medicalCenterName,
 			String vaccineName,
 			int doseNumber,
 			String date,
 			String time,
-			int status) {
+			int status
+			) {
 		
 		this.SSN = SSN;
 		this.medicalCenterID = medicalCenterID;

@@ -4,12 +4,15 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -27,6 +30,7 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
 import Controller.MedicalStaff;
+import Database.db;
 import View.GraphicsComponents.TextField;
 
 
@@ -55,16 +59,28 @@ public class MedicalUser extends User {
 	}
 
 	void setUp() {
-		medicalStaff.loadData();
-		accountTab = new AccountTab();
-		appointmentTab = new AppointmentTab();
-		updateAccountInfo();
+		try {
+			medicalStaff.loadData();
+			accountTab = new AccountTab();
+			appointmentTab = new AppointmentTab();
+			updateAccountInfo();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	@Override
 	void reload() {
-		medicalStaff.loadData();
-		updateAccountInfo();
+		try {
+			medicalStaff.loadData();
+			updateAccountInfo();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	class AccountTab {
@@ -125,11 +141,11 @@ public class MedicalUser extends User {
 			label.setBorder(BorderFactory.createEmptyBorder(0,20,0,10));
 			
 			String [] searchModes = {"SSN", "Date"};
-			JComboBox <String> searchMode = new JComboBox <String> (new DefaultComboBoxModel<String>(searchModes));
+			final JComboBox <String> searchMode = new JComboBox <String> (new DefaultComboBoxModel<String>(searchModes));
 			searchMode.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
 			
 			
-			TextField search = new TextField();
+			final TextField search = new TextField();
 			search.setPlaceholder("");
 			search.setBorder(
 					BorderFactory.createCompoundBorder(
@@ -138,10 +154,10 @@ public class MedicalUser extends User {
 							));
 			
 			
-			JButton go = new JButton("go");
+			final JButton go = new JButton("go");
 			go.setBackground(backgroundColor);
 			
-			JButton cancel = new JButton ("cancel");
+			final JButton cancel = new JButton ("cancel");
 			cancel.setBackground(backgroundColor);
 			
 			go.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
@@ -258,28 +274,26 @@ public class MedicalUser extends User {
 			
 			//request all appointments of the medical center
 			
-			table.addRow(new Object[] {"1234", "Medical Center", "12-02-2022", "12:00", false});
-			table.addRow(new Object[] {"2345", "Medical Center", "13-02-2022", "08:00", false});
-			table.addRow(new Object[] {"2345", "Medical Center", "13-02-2022", "08:00", false});
-			table.addRow(new Object[] {"2345", "Medical Center", "13-02-2022", "08:00", false});
-			table.addRow(new Object[] {"2345", "Medical Center", "13-02-2022", "08:00", false});
-			table.addRow(new Object[] {"2345", "Medical Center", "13-02-2022", "08:00", false});
-			table.addRow(new Object[] {"2345", "Medical Center", "13-02-2022", "08:00", false});
-			table.addRow(new Object[] {"2345", "Medical Center", "13-02-2022", "08:00", false});
-			table.addRow(new Object[] {"2345", "Medical Center", "13-02-2022", "08:00", false});
-			table.addRow(new Object[] {"2345", "Medical Center", "13-02-2022", "08:00", false});
-			table.addRow(new Object[] {"2345", "Medical Center", "13-02-2022", "08:00", false});
-			table.addRow(new Object[] {"2345", "Medical Center", "13-02-2022", "08:00", false});
-			table.addRow(new Object[] {"2345", "Medical Center", "13-02-2022", "08:00", false});
-			table.addRow(new Object[] {"2345", "Medical Center", "13-02-2022", "08:00", false});
-			table.addRow(new Object[] {"2345", "Medical Center", "13-02-2022", "08:00", false});
-			table.addRow(new Object[] {"2345", "Medical Center", "13-02-2022", "08:00", false});
-			table.addRow(new Object[] {"2345", "Medical Center", "13-02-2022", "08:00", false});
-			table.addRow(new Object[] {"2345", "Medical Center", "13-02-2022", "08:00", false});
-			table.addRow(new Object[] {"2345", "Medical Center", "13-02-2022", "08:00", false});
-			table.addRow(new Object[] {"2345", "Medical Center", "13-02-2022", "08:00", false});
-			table.addRow(new Object[] {"2345", "Medical Center", "13-02-2022", "08:00", false});
-			
+			try {
+				db database = new db();
+				database.init();
+				
+				ArrayList<String[]> dailyAppointments = database.GetDailyAppointments(medicalStaff.getMedicalCenterID(), "2022/05/25");
+				System.out.println("Appointments for " + medicalStaff.getMedicalCenterID() + "(" + dailyAppointments.size() + ")");
+				
+				if(dailyAppointments.size()>0)
+				db.PrintArrayList(dailyAppointments);
+				
+				for(int i=1 ; i<dailyAppointments.size() ; i++) {
+					final String [] appt = dailyAppointments.get(i);
+					Object[] appointment = {appt[0], appt[1] + " " + appt[2], appt[3], appt[4], appt[5], false};
+					table.addRow(appointment);
+				}
+				database.con.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return table;
 		}
 	}

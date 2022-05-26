@@ -25,33 +25,9 @@ public class Citizen {
 	}
 	
 	public void loadData () throws SQLException {
-		//TODO request personal info from database
-		//e.g.
+
     	db database = new db();
     	database.init();
-    	/*
-		String [] info = new String [] {
-				"Dwight",
-				"Schrute",
-				"12345678901",
-				"123456789",
-				"18-01-1978",
-				"male",
-				"6987948735",
-				"dschrute@schrutefarms.com",
-				"12345"
-		};
-		
-		firstName 	= info[0];
-		lastName 	= info[1];
-		SSN 		= info[2];
-		TIN 		= info[3];
-		birthDate	= info[4];
-		gender		= info[5];
-		email		= info[6];
-		postalCode	= info[7];
-		toArray();
-		*/
     	
     	String[] info = database.getCitizenName(this.SSN);
 		firstName 	= info[0];
@@ -62,55 +38,29 @@ public class Citizen {
 		
 		info = database.getCitizenCommunicationInfo(SSN);
 		email		= info[0];
+		phoneNumber = info[1];
 		postalCode	= info[2];
+		System.out.println("Postl code of " + firstName + " " + lastName + " is " + postalCode);
 		toArray();
 		
-		//TODO request appointment info from database
-		////////////////////////////////////////////////////////
-		// db returns: ssn, dose number, appointment date, appointment time, hospital name
-		
-		/*
-		ArrayList<String[]> apps = new ArrayList<String[]> ();
-		String[] app = new String[] {
-				"12345678901", 	//SSN
-				"123", 			//medical center id
-				"Vaccine name",
-				"1",			//dose number
-				"Medical Center Name",
-				"09-01-2022", "10:00-12:00",
-				"1"
-		};
-		apps.add(app);
-		app = new String[] {
-				"12345678901", //SSN
-				"123",
-				"Vaccine name",
-				"2",
-				"Medical Center Name",
-				"20-02-2022", "08:00-10:00",
-				"0"
-		};
-		apps.add(app);
-		*/
-		////////////////////////////////////////////////////////
-		
 		ArrayList<String[]> apps = database.GetBookedAppointments(SSN);
-		
+		if (apps == null) System.out.println("apps is null");
 		appointments = new Appointment[apps.size()];
-		
-		for (String[] a : apps) {
-			appointments[Integer.parseInt(a[3])-1] = new Appointment(
-						a[0],
-						a[1],
-						a[1], //TODO get medical center name from id
-						a[2],
-						Integer.parseInt(a[3]),
-						a[5],
-						a[6],
-						Integer.parseInt(a[7])
-					);
-		}
-		
+				
+	     for (int i = 1; i < apps.size();i++){ 		      
+	    	  String[] a = apps.get(i);
+	    	 appointments[Integer.parseInt(a[3])-1]= new Appointment(
+						a[0],	//ssn
+						a[1],	//medical center id
+						a[4],	//medical center name
+						a[2], //vaccine name //TODO get medical center name from id
+						Integer.parseInt(a[3]),	//dose number
+						a[5],	//appointment date
+						a[6],	//appointment time
+						0
+					); 
+	      } 
+
 		database.con.close();
 	}
 	
@@ -163,7 +113,7 @@ public class Citizen {
 				firstName,
 				lastName,
 				SSN,
-				TIN,
+				//TIN,
 				birthDate,
 				gender,
 				phoneNumber,

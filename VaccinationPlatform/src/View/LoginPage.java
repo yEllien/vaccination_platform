@@ -14,6 +14,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.sql.SQLException;
 
 import javax.imageio.ImageIO;
 import javax.swing.Box;
@@ -21,11 +22,13 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import Controller.db;
 import View.GraphicsComponents.RoundedComponent;
 import View.GraphicsComponents.TextField;
 
@@ -220,7 +223,12 @@ abstract public class LoginPage extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				login();
+				try {
+					login();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 			
 		});
@@ -270,7 +278,7 @@ abstract public class LoginPage extends JPanel {
 		
 	}
 		
-	abstract void login () ;
+	abstract void login () throws SQLException;
 	
 	void back () {
 		frame.setContentPane(frame.landingPage);
@@ -290,18 +298,30 @@ class CitizenLogin extends LoginPage {
 	}
 	
 	@Override
-	void login() {
+	void login() throws SQLException {
 		//TODO ask for user with ssn from usernameField
 		String SSN = usernameField.getText();
 		String password = passwordField.getText();
 		
-		frame.userPage = new CitizenUser(frame, SSN);
-		frame.setContentPane(frame.userPage);
-		frame.userPage.setUp();
-		frame.userPage.reload();
-		frame.revalidate();
+		db database = new db();
+		database.init();
+		
+		String[] citizen = database.getCitizenName(SSN);
+		database.con.close();
+		
+		if(citizen[0] != "" && citizen[1] != "") {
+			frame.userPage = new CitizenUser(frame, SSN);
+			frame.setContentPane(frame.userPage);
+			frame.userPage.setUp();
+			frame.userPage.reload();
+			frame.revalidate();
+		}else {
+			JOptionPane.showMessageDialog(frame, "Citizen with SSN = " + SSN + " not found", "Error", JOptionPane.WARNING_MESSAGE);
+		}
+		
+		
 	}
-	
+
 	
 }
 
@@ -324,11 +344,30 @@ class MedicalLogin extends LoginPage {
 		String employeeID = usernameField.getText();
 		String password = passwordField.getText();
 		
-		frame.userPage = new MedicalUser(frame, employeeID, employerID);
-		frame.setContentPane(frame.userPage);
-		frame.userPage.setUp();
-		frame.userPage.reload();
-		frame.revalidate();
+		
+		
+		try {
+			db database = new db();
+			database.init();
+			String[] name = database.getMedicalStaffName(employeeID);
+			database.con.close();
+			
+			if(name[0] != "" && name[1] != "") {
+				frame.userPage = new MedicalUser(frame, employeeID, employerID);
+				frame.setContentPane(frame.userPage);
+				frame.userPage.setUp();
+				frame.userPage.reload();
+				frame.revalidate();
+			}else {
+				JOptionPane.showMessageDialog(frame, "Medical Staff with employeeID = " + employeeID + " not found", "Error", JOptionPane.WARNING_MESSAGE);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
 	}
 }
 
