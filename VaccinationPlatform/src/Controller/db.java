@@ -683,14 +683,15 @@ public class db {
      * Returns available Time Slots for given Hospital and date 
      */
     
-    public ArrayList<String[]> getDateAndTimeSlotsAvailability(String hospitalID, String fromDate) throws SQLException {
+    public ArrayList<String[]> getDateAndTimeSlotsAvailability(String hospitalID) throws SQLException {
+
     	Statement st = con.createStatement();  
     	ArrayList<String[]> dates = new ArrayList<String[]>();
     	
     	ResultSet rs = st.executeQuery("select day, timeSlot, capacity "
 					    			+ "from Hospital_Time_Slots "
 					    			+ "where hospitalID = " + hospitalID
-					    			+ " and day >= " + fromDate);  
+					    			+ " and day >= CURDATE()");  
 
     	dates = ResultSetArray(rs);
     	return dates;
