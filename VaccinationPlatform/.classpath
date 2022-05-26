@@ -7,6 +7,6 @@
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/hy351"/>
-	<classpathentry kind="lib" path="/cs360_ccc/app/cs360_ccc/mysql-connector-java-8.0.27.jar"/>
+	<classpathentry kind="lib" path="C:/Users/chris/eclipse-workspace/Vaccination Platform/vaccination_platform/VaccinationPlatform/mysql-connector-java-8.0.27.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
