@@ -50,8 +50,12 @@ public class Citizen {
 		if (apps == null) System.out.println("apps is null");
 		appointments = new Appointment[apps.size()];
 				
+		System.out.println("Got appointments "+apps.size());
 	     for (int i = 1; i < apps.size();i++){ 		      
 	    	  String[] a = apps.get(i);
+	    	  
+		    	 System.out.println(a);
+	    	  
 	    	 appointments[Integer.parseInt(a[3])-1]= new Appointment(
 						a[0],	//ssn
 						a[1],	//medical center id

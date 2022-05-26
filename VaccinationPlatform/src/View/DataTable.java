@@ -150,7 +150,7 @@ class DataTable extends JScrollPane {
 		}
 		
 		for (Object[] row : data) {
-			addRow(row);
+			model.addRow(row);
 		}
 	}
 	

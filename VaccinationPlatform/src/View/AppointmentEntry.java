@@ -137,7 +137,7 @@ public class AppointmentEntry extends JPanel {
 		doseWrapper.setPreferredSize(new Dimension(tw, maxHeight));
 		
 		JLabel dose = new JLabel();
-		dose.setText("Dose " + Integer.toString(appointment.getDoseNumber()));
+		dose.setText("Dose " + Integer.toString(this.appointment.getDoseNumber()));
 		//System.out.println("Dose number " + appointment.getDoseNumber());
 		dose.setForeground(backgroundColor);
 		dose.setHorizontalAlignment(JLabel.CENTER);
