@@ -537,7 +537,7 @@ public class AppointmentEntry extends JPanel {
 				calendarWrapper.setBackground(backgroundColor);
 				calendarWrapper.setLayout(new BoxLayout(calendarWrapper, BoxLayout.Y_AXIS));
 				
-				makeCalendar(); 
+				makeCalendar(selected); 
 				calendar.setWidth(maxWidth-100);
 
 				calendarWrapper.add(calendar);
@@ -582,8 +582,8 @@ public class AppointmentEntry extends JPanel {
 		database.con.close();
 	}
 	
-	void makeCalendar () {
-		calendar = new Calendar(backgroundColor);
+	void makeCalendar (MedicalCenter selected) {
+		calendar = new Calendar(selected, backgroundColor);
 		
 		final JPanel selectedPanel = new JPanel();
 		selectedPanel.setBackground(backgroundColor);
@@ -628,6 +628,7 @@ public class AppointmentEntry extends JPanel {
 		//confirmAppointmentButton.addActionListener(reloadAppointments);
 		
 		for (final TimeslotColumn column : calendar.timeslotColumn) {
+			if (column.timeslots == null) {continue;}
 			for (final TimeslotEntry entry : column.timeslots) {
 				entry.addActionListener(new ActionListener () {
 					
