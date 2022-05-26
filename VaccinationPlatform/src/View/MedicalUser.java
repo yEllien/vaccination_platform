@@ -30,7 +30,7 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
 import Controller.MedicalStaff;
-import Database.db;
+import Controller.db;
 import View.GraphicsComponents.TextField;
 
 
