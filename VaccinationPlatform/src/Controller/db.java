@@ -1,10 +1,28 @@
 package Controller;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
 import java.sql.Date;
 import java.util.*;
 
+import javax.imageio.ImageIO;
+
 import com.mysql.cj.xdevapi.Type;
+
+import net.glxn.qrgen.core.image.ImageType;
+import net.glxn.qrgen.javase.QRCode;
+import javax.imageio.ImageIO;
+
+import net.glxn.qrgen.core.image.ImageType;
+import net.glxn.qrgen.javase.QRCode;
 
 public class db {
 	
@@ -254,6 +272,63 @@ public class db {
 		return state;
     }
     
+	/*
+	 * Generates QR Code from SSN to be used in Vaccination Certificate 
+	 * and adds vaccination information for a Citizen to Certificate
+	 */
+    
+	public void generateCertificate(String[] name, String ssn) throws IOException, SQLException{
+
+		File file = QRCode.from(ssn).to(ImageType.PNG).withSize(120, 120).file();
+		String fileName = "qr" + ssn + ".png";
+		 
+		Path path = Paths.get(fileName);
+		if ( Files.exists(path)){
+		    Files.delete(path);
+		}
+		 
+		Files.copy(file.toPath(), path);
+		
+	    //read the image
+		BufferedImage qr = ImageIO.read(new File(fileName));
+	    BufferedImage image = ImageIO.read(new File("blank.png"));
+	    
+	    Graphics g = image.getGraphics();
+
+	    //Citizen info
+	    Font f = new Font("Plain", Font.BOLD, 30);
+	    g.setFont(f);
+	    g.setColor(Color.WHITE);
+	    
+	    g.drawString(name[0], 40, 280);
+	    g.drawString(name[1], 40, 340);
+	    g.drawString(ssn, 40, 500);
+	    g.drawImage(qr, 620, 0, null);
+	    
+	    //Vaccination info
+	    ArrayList<String[]> info = GetVaccinationInfo(ssn);
+
+	    g.setColor(new Color(144, 185, 245));
+	    g.setFont(new Font("Plain", Font.BOLD, 20));
+
+	    String str = "";
+	    int k = 280;
+	    for (int i = 0; i < info.size();i++){ 		      
+	    	  String[] row = info.get(i);
+	    	  for (int j = 0; j < row.length; j++){ 		      
+		          str += row[j] + " ";
+		      }
+		      g.drawString(str, 300, k);
+		      str = "";
+		      k +=20;
+	      } 
+
+	    g.dispose();
+	    
+	    
+	    ImageIO.write(image, "png", new File("certificate" + ssn + ".png"));
+	}
+	
     /*
      * Generates a random CertificateID that consists of Citizen's SSN and random characters
      */
