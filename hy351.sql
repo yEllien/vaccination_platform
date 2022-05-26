@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Εξυπηρετητής: 127.0.0.1
--- Χρόνος δημιουργίας: 26 Μάη 2022 στις 20:09:18
+-- Χρόνος δημιουργίας: 26 Μάη 2022 στις 21:14:30
 -- Έκδοση διακομιστή: 10.4.22-MariaDB
 -- Έκδοση PHP: 8.1.0
 
@@ -64,8 +64,14 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `CancelAppointment` (IN `ssn` VARCHA
 
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetAppointmentStatus` (IN `ssn` VARCHAR(11), IN `doseNumber` INT)  BEGIN
+	SELECT Confirmed
+    FROM appointment a
+    WHERE a.citizenSSN = ssn AND a.doseNumber = doseNumber;
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetBookedAppointments` (IN `ssn` VARCHAR(11))  BEGIN	
-    SELECT DISTINCT a.citizenSSN, b.hospitalID, v.name, a.doseNumber, h.name, a.appointmentDate, a.appointmentTime
+    SELECT DISTINCT a.citizenSSN, b.hospitalID, v.name, a.doseNumber, h.name, a.appointmentDate, a.appointmentTime, a.Confirmed
     FROM books b, appointment a, hospital h, hospital_vaccine hv, vaccine v
     WHERE b.citizenSSN = ssn and a.citizenSSN = b.citizenSSN and h.hospitalID = b.hospitalID and v.vaccineID = hv.vaccineID and hv.hospitalID = b.hospitalID and hv.hospitalID = h.hospitalID;
 END$$
@@ -203,7 +209,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `ViewDailyAppointments` (IN `hospita
 	DECLARE apptDate date;
     set apptDate = IFNULL(currDate, CURRENT_DATE);
 	
-    SELECT c.SSN, c.firstName, c.lastName, b.doseNumber, a.appointmentDate, a.appointmentTime, h.hospitalID
+    SELECT c.SSN, c.firstName, c.lastName, b.doseNumber, a.appointmentDate, a.appointmentTime, h.hospitalID, a.Confirmed
     FROM citizen c
     JOIN books b on c.SSN = b.citizenSSN
     JOIN appointment a on a.citizenSSN = b.citizenSSN and a.doseNumber = b.doseNumber and a.appointmentDate = apptDate
@@ -273,7 +279,7 @@ INSERT INTO `appointment` (`citizenSSN`, `doseNumber`, `appointmentDate`, `appoi
 ('09108078512', 1, '2022-05-19', '08:00-12:00', 'Pfizer', 0),
 ('09118460019', 1, '2022-05-19', '16:00-20:00', 'Pfizer', 0),
 ('11017426134', 1, '2022-05-19', '12:00-16:00', 'Pfizer', 0),
-('11018701926', 1, '2022-05-25', '16:00-20:00', 'Pfizer', 0),
+('11018701926', 1, '2022-05-25', '16:00-20:00', 'Pfizer', 1),
 ('11018701926', 2, '2022-05-26', '08:00-12:00', 'Pfizer', 1),
 ('12345678900', 1, '2022-05-14', '08:00-12:00', 'Pfizer', 0),
 ('18079318729', 1, '2022-05-28', '12:00-16:00', 'Pfizer', 0),
@@ -338,7 +344,7 @@ INSERT INTO `citizen` (`firstName`, `lastName`, `SSN`, `gender`, `dateOfBirth`, 
 ('Jake', 'Lester', '09118460019', 'male', '1984-11-09', 'not vaccinated', 0),
 ('Abdiel', 'Moreno', '11017426134', 'male', '1974-01-11', 'not vaccinated', 0),
 ('Chace', 'Downs', '11018009871', 'male', '1980-01-11', 'not vaccinated', 0),
-('Kenna', 'Manning', '11018701926', 'female', '1987-01-11', 'fully vaccinated', 2),
+('Kenna', 'Manning', '11018701926', 'female', '1987-01-11', 'fully vaccinated', 1),
 ('Leland', 'Chapman', '12109200956', 'female', '1992-10-12', 'not vaccinated', 0),
 ('Ricky', 'Salinas', '13117690374', 'male', '1976-11-13', 'not vaccinated', 0),
 ('Aubrey', 'Proctor', '15059775840', 'female', '1997-05-15', 'not vaccinated', 0),
