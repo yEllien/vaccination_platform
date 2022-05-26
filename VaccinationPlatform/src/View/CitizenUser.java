@@ -19,6 +19,7 @@ import javax.swing.border.EmptyBorder;
 
 import Controller.Appointment;
 import Controller.Citizen;
+import Controller.Vaccine;
 import View.GraphicsComponents.CustomButton;
 import View.GraphicsComponents.RoundedPanel;
 
@@ -98,6 +99,13 @@ public class CitizenUser extends User{
 							}
 							));
 			if(appointment.getStatus()!=1)
+				complete = false;
+		}
+		
+		int appointmentCount = citizen.getAppointments().length;
+		if (appointmentCount >= 1) {
+			String vname = citizen.getAppointments()[0].getVaccineName();
+			if (Vaccine.getVaccineDoses(vname) > appointmentCount)
 				complete = false;
 		}
 		
