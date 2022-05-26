@@ -15,6 +15,10 @@ public class db {
     private static final String password = "";
     public Connection con;
     
+    /*
+     * Initializes a connection to the database 
+     */
+    
     public void init(){
         con = null;
  
@@ -26,6 +30,10 @@ public class db {
     
     /* 
      * Methods to execute queries for a Citizen 
+     */
+    
+    /*
+     * Returns first name and last name of Citizen
      */
     
     public String[] getCitizenName(String ssn) throws SQLException{
@@ -44,6 +52,10 @@ public class db {
 		return name;
     }
     
+    /*
+     * Returns Citizen's birth date in format yyyy/mm/dd
+     */
+    
     public String getCitizenBirthDate(String ssn) throws SQLException{
     	Date dateOfBirth;
     	String date = "";
@@ -60,6 +72,10 @@ public class db {
 		return date;
     }
     
+    /*
+     * Returns Citizen's gender
+     */
+    
     public String getCitizenGender(String ssn) throws SQLException{
     	String gender = "";
     	Statement stmt = con.createStatement();  
@@ -73,6 +89,11 @@ public class db {
     	rs.close();
 		return gender;
     }
+    
+    /*
+     * Returns an array with a Citizen's communication information;
+     * Email, Phone Number and Postal Code
+     */
     
     public String[] getCitizenCommunicationInfo(String ssn) throws SQLException{
     	String info[] = {"", "", ""};
@@ -91,6 +112,10 @@ public class db {
 		return info;
     }
     
+    /*
+     * Decrements capacity of given time slot in date and hospital scpecified by date and hospitalID
+     */
+    
     public void UpdateTimeSlotCapacity(String hospitalID, String date, String timeSlot) throws SQLException{
         Statement st = con.createStatement();
 		CallableStatement proc = con.prepareCall("call UpdateCapacity(?,?,?);");
@@ -105,6 +130,32 @@ public class db {
 		rs.close();
 		proc.close();
     }
+
+    /*
+     * Adds a new appointment for Citizen in corresponding database table 
+     */
+    
+    public void AddAppointment(int doseNumber, String citizenSSN, String hospitalID, 
+			String date, String timeSlot, String vaccine) throws SQLException {
+
+			Statement st = con.createStatement();
+			CallableStatement proc = con.prepareCall("call AddAppointment(?,?,?,?,?);");
+			ResultSet rs;
+			
+			proc.setString(1, citizenSSN);
+			proc.setInt(2, doseNumber);
+			proc.setString(3, date);
+			proc.setString(4, timeSlot);
+			proc.setString(5, vaccine);
+			rs = proc.executeQuery();
+			
+			rs.close();
+			proc.close();
+    }
+    
+    /*
+     * Adds a record with Citizen SSN, Dose Number and HospitalID in table corresponding to relationship Books
+     */
     
     public void bookAppointment(int doseNumber, String citizenSSN, String hospitalID, 
     							String date, String timeSlot, String vaccine) throws SQLException {
@@ -118,23 +169,17 @@ public class db {
 		proc.setString(3, hospitalID);
 		
 		rs = proc.executeQuery();
+	
 		rs.close();
 		proc.close();
 		
-		
-		CallableStatement proc2 = con.prepareCall("call AddAppointment(?,?,?,?,?);");
-		proc2.setString(1, citizenSSN);
-		proc2.setInt(2, doseNumber);
-		proc2.setString(3, date);
-		proc2.setString(4, timeSlot);
-		proc2.setString(5, vaccine);
-		rs = proc2.executeQuery();
-		
-		rs.close();
-		proc2.close();
-		
+		AddAppointment(doseNumber, citizenSSN, hospitalID, date, timeSlot, vaccine);
 		UpdateTimeSlotCapacity(hospitalID, date, timeSlot);
     }
+    
+    /*
+     * Returns doses successfully completed by Citizen 
+     */
     
     public int getDosesCompleted(String ssn) throws SQLException {
     	int doses = 0;
@@ -151,6 +196,28 @@ public class db {
     	return doses;
     }
     
+    /*
+     * Make Appointment state confirmed
+     */
+    
+    public void UpdateAppointment(String ssn, int doseNumber) throws SQLException {
+    	Statement st = con.createStatement();  
+    	CallableStatement proc = con.prepareCall("call UpdateAppointment(?,?);");  
+    	ResultSet rs;
+    	
+    	proc.setString(1, ssn);
+    	proc.setInt(2, doseNumber);
+    	
+    	rs = proc.executeQuery();
+    	
+    	rs.close();
+    	proc.close();
+    }
+    
+    /*
+     * Updates number of completed doses and vaccination state of Citizen 
+     */
+    
     public void UpdateDosesAndVaccinationState(String ssn, int doseNumber) throws SQLException {
     	Statement st = con.createStatement();  
     	CallableStatement proc = con.prepareCall("call UpdateDosesAndState(?,?);");  
@@ -163,7 +230,14 @@ public class db {
     	
     	rs.close();
     	proc.close();
+    	
+    	UpdateAppointment(ssn, doseNumber);
     }
+    
+    /*
+     * Returns vaccination state of Citizen; 
+     * 'not vaccinated' , 'partially vaccinated', 'fully vaccinated'
+     */
     
     public String getVaccinationState(String ssn) throws SQLException{
     	String state = "";
@@ -180,6 +254,10 @@ public class db {
 		return state;
     }
     
+    /*
+     * Generates a random CertificateID that consists of Citizen's SSN and random characters
+     */
+    
     private String generateCertificateID(String ssn) {
 
 		Random rnd = new Random();
@@ -193,6 +271,12 @@ public class db {
 
 		return id;
     }
+    
+    /*
+     * Checks if Citizen has completed all required doses and 
+     * issues a Vaccination Certificate .
+     * Returns true if certificate is issued successfully, false otherwise.
+     */
     
     public boolean IssueCertificate(String ssn) throws SQLException {
     	String state = getVaccinationState(ssn);
@@ -221,6 +305,10 @@ public class db {
     	return false;
     }
     
+    /*
+     * Get date of Appointment booked by Citizen
+     */
+    
     public String getAppointmentDate(String ssn, int doseNum) throws SQLException {
     	String date = "";
     	Statement stmt = con.createStatement();  
@@ -237,6 +325,9 @@ public class db {
     	return date;
     }
     
+    /*
+     * Returns Appointments booked by Citizen
+     */
     
     public ArrayList<String[]> ViewBookedAppointments(String ssn) throws SQLException {
 		CallableStatement st = con.prepareCall("call ViewBookedAppointments(?);");
@@ -254,7 +345,11 @@ public class db {
 		return bookedAppointments;    
     }
     
-    // similar to ViewBookedAppointments
+    /*
+     * Similar to ViewBookedAppointments().
+     * Returns additional information about the VAccine name. 
+     */
+    
     public ArrayList<String[]> GetBookedAppointments(String ssn) throws SQLException {
 		CallableStatement st = con.prepareCall("call GetBookedAppointments(?);");
 		ArrayList<String[]> bookedAppointments = new ArrayList<String[]>();
@@ -273,6 +368,10 @@ public class db {
 		return bookedAppointments;    
     }
     
+    /*
+     * Returns Appointments of Citizen that have been confirmed 
+     */
+    
     public ArrayList<String[]> ViewCompletedVaccinations(String ssn) throws SQLException {
 		CallableStatement st = con.prepareCall("call ViewCompletedVaccinations(?);");
 		ArrayList<String[]> completedVaccinations = new ArrayList<String[]>();
@@ -289,8 +388,10 @@ public class db {
 		return completedVaccinations;    
     }
     
-    // Procedure CancelAppointment() checks if date is at least 3 days prior to the booked appointment
-    // Doesn't check if citizen has cancelled an appointment before
+    /*
+     * Checks if date is at least 3 days prior to the booked appointment 
+     * and removes it from database, incrementing the capacity of the corresponding time slot.
+     */ 
     
     public void CancelAppointment(String ssn, int doseNum) throws SQLException {
 		Statement st = con.createStatement();  
@@ -305,6 +406,10 @@ public class db {
 		proc.close();
 
     }
+    
+    /*
+     * Changes date of an already booked Appointment
+     */
     
     public void ModifyDate(String ssn, int doseNum, String newDate, String oldTimeSlot, String hospitalID) throws SQLException {
 		Statement st = con.createStatement();  
@@ -322,6 +427,10 @@ public class db {
 		proc.close();
     }
     
+    /*
+     * Changes time slot of an already booked Appointment 
+     */
+    
     public void ModifyTimeSlot(String ssn, int doseNum, String oldDate, String newTimeSlot, String hospitalID) throws SQLException {
 		Statement st = con.createStatement();  
     	CallableStatement proc = con.prepareCall("call ModifyDate(?,?,?,?,?);");  
@@ -337,6 +446,11 @@ public class db {
 		rs.close();
 		proc.close();
     }
+    
+    /*
+     * Returns information about date, dose number, vaccine name,
+     * vaccine manufacturer and medical center name of a confirmed appointment.
+     */
     
     public ArrayList<String[]> GetVaccinationInfo(String ssn) throws SQLException{
 		CallableStatement st = con.prepareCall("call ViewVaccinationInfo(?);");
@@ -354,6 +468,10 @@ public class db {
 		return vaccinationInfo;  
     }
     
+    /*
+     * Updates a Citizen's email address
+     */
+    
     public void UpdateEmail(String ssn, String email) throws SQLException {
     	PreparedStatement preparedStmt = con.prepareStatement("update CommunicationInfo "
 												    			+ "set email = ? "
@@ -362,6 +480,10 @@ public class db {
     	preparedStmt.setString(2, ssn);
     	preparedStmt.executeUpdate();
     }
+    
+    /*
+     * Updates a Citizen's phone number
+     */
     
     public void UpdatePhoneNumber(String ssn, String phoneNumber) throws SQLException {
     	PreparedStatement preparedStmt = con.prepareStatement("update CommunicationInfo "
@@ -372,6 +494,9 @@ public class db {
     	preparedStmt.executeUpdate();
     }
     
+    /*
+     * Updates a Citizen's postal code
+     */
     
     public void UpdatePostalCode(String ssn, String postalCode) throws SQLException {
     	PreparedStatement preparedStmt = con.prepareStatement("update CommunicationInfo "
@@ -381,6 +506,11 @@ public class db {
     	preparedStmt.setString(2, ssn);
     	preparedStmt.executeUpdate();
     }
+    
+    /*
+     * Adds a Citizen's communication information;
+     * email, phone number and postal code
+     */
     
     public void AddCommunicationInfo(String ssn, String email, String phoneNumber, String postalCode) throws SQLException {
 		CallableStatement st = con.prepareCall("call AddCommunicationInfo(?, ?, ?, ?);");
@@ -400,6 +530,10 @@ public class db {
      * Methods to execute queries for MedicalStaff 
      */
     
+    /*
+     * Returns first name and last name of a Medical Staff
+     */
+    
     public String[] getMedicalStaffName(String employeeID) throws SQLException{
     	String name[] = {"", ""};
     	Statement stmt = con.createStatement(); 
@@ -417,6 +551,11 @@ public class db {
     	rs.close();
 		return name;
     }
+
+    /*
+     * Returns name of Medical Center a Medical Staff works at
+     */
+
     
     public String getMedicalStaffHospital(String employeeID) throws SQLException{
     	String hospitalID = null;
@@ -442,6 +581,11 @@ public class db {
 		return hospitalName;
     }
     
+    
+    /*
+     * Returns ID of Medical Center a Medical Staff works at
+     */
+
     public String getMedicalStaffHospitalId(String employeeID) throws SQLException{
     	String hospitalID = "";
     	
@@ -456,6 +600,12 @@ public class db {
     	
 		return hospitalID;
     }
+    
+    /*
+     * Returns Appointments booked at given Vaccination Center.
+     * If date is specified it returns the corresponding Appointments, 
+     * otherwise it returns the Appointments of current date.
+     */
     
     public ArrayList<String[]> GetDailyAppointments(String hospitalID, String date) throws SQLException{
     	
@@ -475,6 +625,10 @@ public class db {
 		return dailyAppointments;    	
     }
     
+    /*
+     * Returns Appointments booked by given Citizen (from those returned by ViewDailyAppointments) 
+     */
+    
     public ArrayList<String[]> GetAppointmentsBySSN(String hospitalID, String ssn) throws SQLException{
     	
 		CallableStatement st = con.prepareCall("call ViewAppointmentsBySSN(?,?);");
@@ -493,12 +647,21 @@ public class db {
 		return appointments;    	
     }
     
+    /*
+     * Confirms a Citizen's Vaccination
+     */
+    
     public void ConfirmVaccination(String ssn, int doseNumber) throws SQLException {
     	UpdateDosesAndVaccinationState(ssn, doseNumber);
+    	
     }
     
     /* 
      * Methods to execute queries for a Hospital 
+     */
+    
+    /*
+     * Returns ID of Hospital specified by hospitalName 
      */
     
     public String getHospitalID(String hospitalName) throws SQLException {
@@ -516,6 +679,10 @@ public class db {
     	return hospitalID;
     }
     
+    /*
+     * Returns available Time Slots for given Hospital and date 
+     */
+    
     public ArrayList<String[]> getDateAndTimeSlotsAvailability(String hospitalID, String fromDate) throws SQLException {
     	Statement st = con.createStatement();  
     	ArrayList<String[]> dates = new ArrayList<String[]>();
@@ -528,6 +695,11 @@ public class db {
     	dates = ResultSetArray(rs);
     	return dates;
     }
+    
+    /*
+     * Returns Hospitals near Citizen by comparing the first digit of
+     * postal codes of Hospital and Citizen
+     */
     
     public ArrayList<String> getNearbyHospitals(String postalCode) throws SQLException{
     	Statement st = con.createStatement();  
@@ -550,6 +722,10 @@ public class db {
     	return hospitals;
     }
     
+    /*
+     * Returns the name of the Vaccine used by given Hospital 
+     */
+    
     public String getHospitalVaccine(String hospitalID) throws SQLException {     	
 		CallableStatement st = con.prepareCall("call GetHospitalVaccine(?);");
 		ArrayList<String[]> appointments = new ArrayList<String[]>();
@@ -571,6 +747,10 @@ public class db {
     
     /*
      * Helper functions
+     */
+    
+    /*
+     * Converts ResultSet into ArrayList<String[]>
      */
     
 	private ArrayList<String[]> ResultSetArray(ResultSet rs) throws SQLException{
@@ -598,6 +778,10 @@ public class db {
 		return list;
 	}
 	
+	/*
+	 * Prints an ArrayList<String[]> 
+	 */
+	
 	public static void PrintArrayList(ArrayList<String[]> ar) {
 	      for (int i = 0; i < ar.size();i++){ 		      
 	    	  String[] row = ar.get(i);
@@ -605,54 +789,6 @@ public class db {
 		          System.out.print(row[j] + " ");
 		      }   System.out.println();
 	      }   	
-	}
-	
-    
-/*    public static void main(String[] args) throws SQLException, ClassNotFoundException {
-    	db database = new db();
-    	database.init();
-    	
-    	System.out.println("connected");
-    	
-    	String ssn = "11018701926";
-    	String[] name = database.getCitizenName(ssn);
-    	
-    	if(name!=null) {
-    	//database.getCitizenAppointmentID(ssn);
-    	//database.bookAppointment(1, ssn, "20309");
-    	//ArrayList<String[]> ar = database.getDateAndTimeSlotsAvailability("20309", "2022/05/16");
-    			//database.GetDailyAppointments("20309", "2022/05/19");
-    	//PrintArrayList(ar);
-    	
-    	ArrayList<String> a = database.getNearbyHospitals("21810");
-    	System.out.println("Nearby Hospitals: " + a.size());
-    	for(int i=0 ; i<a.size() ; i++) {
-    		String hospitalName = a.get(i);
-    		System.out.println(hospitalName);
-    		String hospitalID = database.getHospitalID(hospitalName);
-    		System.out.println(hospitalID);
-    		String vaccineName = database.getHospitalVaccine(hospitalID);
-    		System.out.println(vaccineName);
-    		
-    	}
-    	//database.bookAppointment(2, ssn, "20309", "2022/05/26", "08:00-12:00", "Pfizer");
-    	//database.ConfirmVaccination(ssn, 2);
-    	//database.CancelAppointment(ssn, 1);
-//    	if(database.IssueCertificate(ssn) == true) System.out.println("Issue vaccination certificate");
-//    	else System.out.println("Can not issue vaccination certificate");
-    	
-    	//database.PrintArrayList(database.GetVaccinationInfo(ssn));
-    	//database.AddCommunicationInfo("09118460019", "jakelester@email.com", "6909118460", null);
-    	//database.UpdateEmail("09118460019", "jakelester@email.com");
-    	//database.UpdatePhoneNumber("09118460019", "6909118460");
-    	//database.UpdatePostalCode("09118460019", "38010");
-    	//database.PrintArrayList(database.ViewCompletedVaccinations("11018701926"));
-    	
-    	database.con.close();
-    	
-    	}
-    }  
-
-*/   
+	}   
     
 }

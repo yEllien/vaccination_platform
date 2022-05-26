@@ -316,7 +316,7 @@ public class MedicalUser extends User {
 				db database = new db();
 				database.init();
 				
-				ArrayList<String[]> dailyAppointments = database.GetDailyAppointments(medicalStaff.getMedicalCenterID(), "2022/05/19");
+				ArrayList<String[]> dailyAppointments = database.GetDailyAppointments(medicalStaff.getMedicalCenterID(), "2022/05/25");
 				System.out.println("Appointments for " + medicalStaff.getMedicalCenterID() + "(" + dailyAppointments.size() + ")");
 				
 				if(dailyAppointments.size()>0)

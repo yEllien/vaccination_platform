@@ -655,12 +655,19 @@ public class AppointmentEntry extends JPanel {
 							db database = new db();
 							database.init();
 							vaccinationState = database.getVaccinationState(citizen.citizen.getSSN());
+							
+							System.out.println("SSN: " + citizen.citizen.getSSN() + "   STATE: " + vaccinationState);
+							
 							database.con.close();
 						} catch (SQLException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
 						
+						if(vaccinationState == "fully vaccinated") {
+							status = 1;
+						} System.out.println("       STATUS: " + status);
+							
 						
 						appointment = new Appointment(
 									appointment.getSSN(),
@@ -671,7 +678,7 @@ public class AppointmentEntry extends JPanel {
 									//"Medical center", //TODO get medical center name from id
 									date,
 									time,
-									0
+									status
 								);
 						
 						selectedLabel.setText(
@@ -776,6 +783,20 @@ public class AppointmentEntry extends JPanel {
 					  //TODO
 					  //Confirmation successful!
 					  //update database with the appointment this.appointment
+					  
+					  try {
+						 db database = new db();
+						 database.init();
+						 
+						 database.bookAppointment(appointment.getDoseNumber(), appointment.getSSN(), 
+								 appointment.getMedicalCenterID(), appointment.getDate(), appointment.getTime(), appointment.getVaccineName());
+						 
+						 database.con.close();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					  
 					  System.out.println("okay");
 					  citizen.reloadAppointments();
 					  return;
